@@ -5,7 +5,7 @@ REPOSITORY=/home/ec2-user/app/develop
 echo">check running pid"
 
 
-CURRENT_PID=$(pgrep -f aenitto-api)
+CURRENT_PID=$(pgrep -f aenitto)
 
 
 echo "> CURRENT_PID"
