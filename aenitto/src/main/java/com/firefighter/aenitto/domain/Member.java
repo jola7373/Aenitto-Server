@@ -11,7 +11,7 @@ import java.util.ArrayList;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {
+public class Member extends CreationModificationLog {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "member_id")
     private String id;
