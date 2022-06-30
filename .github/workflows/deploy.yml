@@ -28,7 +28,7 @@ jobs:
           java-version: 17
 
       - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+        run: chmod +x ./gradlew
 
       # Build
       - name: Build with Gradle
@@ -54,4 +54,10 @@ jobs:
         run: |
           aws s3 cp \
           --region ap-northeast-2 \
-          --acl private s3-location bucket=./aenitto-build.zip s3://aenitto-deploy/
+          --acl private \
+          ./aenitto-build.zip s3://aenitto-deploy/
+          
+#         run: |
+#           aws s3 cp \
+#           --region ap-northeast-2 \
+#           --acl private s3-location bucket=./aenitto-build.zip s3://aenitto-deploy/
