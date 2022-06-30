@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 public class Member extends CreationModificationLog {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "member_id")
-    private String id;
+    private Long id;
 
     private String nickname;
 
