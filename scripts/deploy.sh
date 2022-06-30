@@ -1,11 +1,11 @@
 #!/bin/bash
 
-REPOSITORY=/home/ec2-user/app/step2/zip
+REPOSITORY=/home/ec2-user/app/develop
 
 echo">check running pid"
 
 
-CURRENT_PID=$(pgrep -f 2Cube)
+CURRENT_PID=$(pgrep -f aenitto)
 
 
 echo "> CURRENT_PID"
