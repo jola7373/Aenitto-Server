@@ -61,7 +61,15 @@ jobs:
           --acl private \
           ./aenitto-build.zip s3://aenitto-deploy/
           
-#         run: |
-#           aws s3 cp \
-#           --region ap-northeast-2 \
-#           --acl private s3-location bucket=./aenitto-build.zip s3://aenitto-deploy/
+      # Deploy
+      - name: Deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws deploy create-deployment \
+          --application-name aenitto-api \
+          --deployment-group-name aenitto-deploy-group \
+          --file-exists-behavior OVERWRITE \
+          --s3-location bucket=aenitto-deploy,bundleType=zip,key=aenitto-build.zip \
+          --region ap-northeast-2
