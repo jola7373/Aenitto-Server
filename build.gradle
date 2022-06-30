@@ -5,9 +5,9 @@ plugins {
 	id 'java'
 }
 
-//group = 'com.firefighter'
-//version = '0.0.1-SNAPSHOT'
-//sourceCompatibility = '17'
+group = 'com.firefighter'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
 
 configurations {
 	compileOnly {
