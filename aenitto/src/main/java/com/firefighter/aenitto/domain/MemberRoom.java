@@ -45,3 +45,4 @@ public class MemberRoom extends CreationModificationLog {
         return this.admin;
     }
 }
+
