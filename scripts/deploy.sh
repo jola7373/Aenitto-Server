@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REPOSITORY=/home/ec2-user/app
+REPOSITORY=/home/ec2-user/app/deploy
 
 echo">check running pid"
 
