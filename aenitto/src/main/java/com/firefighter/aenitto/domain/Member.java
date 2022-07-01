@@ -4,18 +4,21 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends CreationModificationLog {
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "member_id")
-    private Long id;
+    @Id @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(name = "member_id", columnDefinition = "BINARY(225)")
+    private UUID id;
 
     private String nickname;
 
