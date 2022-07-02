@@ -1,5 +1,8 @@
-package com.firefighter.aenitto.domain;
+package com.firefighter.aenitto.rooms.domain;
 
+import com.firefighter.aenitto.common.baseEntities.CreationModificationLog;
+import com.firefighter.aenitto.members.domain.Member;
+import com.firefighter.aenitto.missions.domain.IndividualMission;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

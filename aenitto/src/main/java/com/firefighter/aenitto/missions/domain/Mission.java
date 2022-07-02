@@ -1,4 +1,4 @@
-package com.firefighter.aenitto.domain;
+package com.firefighter.aenitto.missions.domain;
 
 import lombok.AccessLevel;
 import lombok.Builder;

@@ -1,5 +1,8 @@
-package com.firefighter.aenitto.domain;
+package com.firefighter.aenitto.messages.domain;
 
+import com.firefighter.aenitto.common.baseEntities.CreationLog;
+import com.firefighter.aenitto.members.domain.Member;
+import com.firefighter.aenitto.messages.domain.Message;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +13,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Report extends CreationLog{
+public class Report extends CreationLog {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "report_id")
     private Long id;

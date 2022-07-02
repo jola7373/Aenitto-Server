@@ -1,5 +1,6 @@
-package com.firefighter.aenitto.domain;
+package com.firefighter.aenitto.rooms.domain;
 
+import com.firefighter.aenitto.common.baseEntities.CreationModificationLog;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +9,6 @@ import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,5 +1,6 @@
-package com.firefighter.aenitto.domain;
+package com.firefighter.aenitto.rooms.domain;
 
+import com.firefighter.aenitto.members.domain.Member;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
