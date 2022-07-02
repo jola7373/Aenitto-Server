@@ -33,7 +33,7 @@ public class Message extends CreationLog {
     @ColumnDefault(value = "false")
     private boolean read;
 
-    @Column(name = "img_url")
+    @Column
     private String imgUrl;
 
     @Builder

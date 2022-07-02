@@ -21,7 +21,7 @@ public class Token {
     @Column(name = "member_id")
     private Long memberId;
 
-    @Column(name = "refresh_token")
+    @Column
     private String refreshToken;
 
     @Builder

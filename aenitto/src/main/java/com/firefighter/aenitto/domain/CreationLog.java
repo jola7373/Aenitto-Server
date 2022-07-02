@@ -14,6 +14,6 @@ import java.time.LocalDateTime;
 @EntityListeners({AuditingEntityListener.class})
 public abstract class CreationLog {
     @CreatedDate
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 }

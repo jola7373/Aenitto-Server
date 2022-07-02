@@ -31,7 +31,7 @@ public class IndividualMission {
     @ColumnDefault(value = "false")
     private boolean fulfilled;
 
-    @Column(name = "fulfilled_at")
+    @Column
     private LocalDateTime fulfilledAt;
 
     @Builder

@@ -30,7 +30,7 @@ public class MemberRoom extends CreationModificationLog {
 
     private boolean admin;
 
-    @Column(name = "color_idx")
+    @Column
     private int colorIdx;
 
     @Enumerated(value = EnumType.STRING)
