@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -30,6 +31,9 @@ public class MemberRoom extends CreationModificationLog {
 
     private boolean admin;
 
+    @ColumnDefault(value = "false")
+    private boolean viewManitto;
+
     @Column
     private int colorIdx;
 
@@ -44,6 +48,14 @@ public class MemberRoom extends CreationModificationLog {
 
     public boolean isAdmin() {
         return this.admin;
+    }
+
+    public boolean didViewManitto() {
+        return this.viewManitto;
+    }
+
+    public void setViewManito() {
+        viewManitto = true;
     }
 }
 
