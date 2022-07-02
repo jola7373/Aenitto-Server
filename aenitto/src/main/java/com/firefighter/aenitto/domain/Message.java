@@ -28,6 +28,9 @@ public class Message extends CreationLog {
     @JoinColumn(name = "room_id")
     private Room room;
 
+    @OneToOne(mappedBy = "message", cascade = CascadeType.ALL)
+    private Report report;
+
     private String content;
 
     @ColumnDefault(value = "false")
@@ -48,5 +51,9 @@ public class Message extends CreationLog {
 
     public void readMessage() {
         this.read = true;
+    }
+
+    public boolean reportExists() {
+        return report != null;
     }
 }
