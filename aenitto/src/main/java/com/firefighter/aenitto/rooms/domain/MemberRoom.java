@@ -60,5 +60,12 @@ public class MemberRoom extends CreationModificationLog {
     public void setViewManito() {
         viewManitto = true;
     }
+
+    public void setMemberRoom(Member member, Room room) {
+        this.member = member;
+        this.room = room;
+        member.getMemberRooms().add(this);
+        room.getMemberRooms().add(this);
+    }
 }
 
