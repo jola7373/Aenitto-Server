@@ -12,6 +12,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @Qualifier(value = "roomServiceImpl")
 @Transactional(readOnly = true)
@@ -27,7 +29,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
-    public Room createRoom(Long memberId, RoomRequest roomRequest) {
+    public Room createRoom(UUID memberId, RoomRequest roomRequest) {
         // find member
         Member byMemberId = memberRepository.findByMemberId(memberId);
 
@@ -40,9 +42,8 @@ public class RoomServiceImpl implements RoomService {
             try {
                 roomRepository.findByInvitation(room.getInvitation());
             } catch (EmptyResultDataAccessException e) {
-                continue;
+                break;
             }
-            break;
         } while (true);
 
         // admin MemberRoom 생성 및 persist
