@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,6 +85,21 @@ class RoomRepositoryImplTest {
         // then
         assertThat(byInvitation).isEqualTo(room);
         assertThat(byInvitation.getTitle()).isEqualTo("방제목");
+    }
+
+    @DisplayName("초대코드로 방 검색 -> 실패 (초대코드 없음)")
+    @Test
+    void findByInvitationTestFailure() {
+        // given
+        roomRepository.saveRoom(room);
+        em.flush();
+
+        // exception throw
+        assertThatThrownBy(() -> {
+            Room byInvitation = roomRepository.findByInvitation("123466");
+        })
+                .isInstanceOf(EmptyResultDataAccessException.class);
+
     }
 
 }
