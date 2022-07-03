@@ -23,11 +23,15 @@ ext {
 	set('snippetsDir', file("build/generated-snippets"))
 }
 
+jar {
+	enabled = false
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'mysql:mysql-connector-java'
+	implementation 'org.postgresql:postgresql:42.1.4'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
