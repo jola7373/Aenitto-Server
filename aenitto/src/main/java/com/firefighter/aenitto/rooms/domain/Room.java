@@ -29,6 +29,7 @@ public class Room extends CreationModificationLog {
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<Relation> relations = new ArrayList<>();
 
+    private String title;
     private int capacity;
 
     private String invitation;
@@ -44,18 +45,11 @@ public class Room extends CreationModificationLog {
     private LocalDate endDate;
 
     @Builder
-    public Room(int capacity, String invitation, String startDate, String endDate) {
+    public Room(String title, int capacity, String invitation, LocalDate startDate, LocalDate endDate) {
+        this.title = title;
         this.capacity = capacity;
         this.invitation = invitation;
-        this.startDate = stringToLocalDate(startDate);
-        this.endDate = stringToLocalDate(endDate);
-    }
-
-    private String localDateToString(LocalDate date) {
-        return date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
-    }
-
-    private LocalDate stringToLocalDate(String date) {
-        return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 }
