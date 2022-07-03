@@ -1,14 +1,12 @@
 package com.firefighter.aenitto.rooms.repository;
 
-import com.firefighter.aenitto.members.domain.Member;
 import com.firefighter.aenitto.rooms.domain.Room;
 import com.firefighter.aenitto.rooms.domain.RoomState;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,17 +25,24 @@ class RoomRepositoryImplTest {
     @Autowired EntityManager em;
     @Autowired RoomRepositoryImpl roomRepository;
 
+    Room room;
+
+    @BeforeEach
+    void setRoom() {
+        this.room = Room.builder()
+                .title("방제목")
+                .capacity(10)
+                .invitation("123456")
+                .startDate(LocalDate.of(2022, 6, 27))
+                .endDate(LocalDate.of(2022, 6, 30))
+                .build();
+    }
+
+
     @DisplayName("Room Entity 테스트")
     @Test
     void roomEntityTest() {
         // given
-        Room room = Room.builder()
-                .capacity(10)
-                .invitation("123456")
-                .startDate("2022.06.27")
-                .endDate("2022.06.30")
-                .build();
-
         em.persist(room);
         em.flush();
 
@@ -56,13 +61,6 @@ class RoomRepositoryImplTest {
     @Test
     void persistRoom() {
         // given
-        Room room = Room.builder()
-                .invitation("123456")
-                .startDate("2022.06.27")
-                .endDate("2022.06.30")
-                .capacity(10)
-                .build();
-
         roomRepository.saveRoom(room);
         em.flush();
 
@@ -71,6 +69,21 @@ class RoomRepositoryImplTest {
 
         // then
         assertThat(room).isEqualTo(roomById);
+    }
+
+    @DisplayName("초대코드로 방 검색 -> 성공")
+    @Test
+    void findByInvitationTest() {
+        // given
+        roomRepository.saveRoom(room);
+        em.flush();
+
+        // when
+        Room byInvitation = roomRepository.findByInvitation("123456");
+
+        // then
+        assertThat(byInvitation).isEqualTo(room);
+        assertThat(byInvitation.getTitle()).isEqualTo("방제목");
     }
 
 }
