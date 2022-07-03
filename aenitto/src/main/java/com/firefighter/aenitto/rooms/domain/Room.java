@@ -8,11 +8,13 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Entity
 @Getter
@@ -52,4 +54,18 @@ public class Room extends CreationModificationLog {
         this.startDate = startDate;
         this.endDate = endDate;
     }
+
+    public void createInvitation() {
+        this.invitation = randomSixNumUpperString();
+    }
+
+    private String randomSixNumUpperString() {
+        Random random = new Random();
+        return random.ints(48, 91)
+                .filter((rand) -> (rand < 58) || (rand >= 65))
+                .limit(6)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+    }
+
 }
