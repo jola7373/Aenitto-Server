@@ -22,4 +22,14 @@ public class RoomRepositoryImpl implements RoomRepository {
     public Room findRoomById(Long id) {
         return em.find(Room.class, id);
     }
+
+    @Override
+    public Room findByInvitation(String invitation) {
+        return em.createQuery(
+                        "SELECT r" +
+                                " FROM Room r" +
+                                " WHERE r.invitation = :invitation", Room.class)
+                .setParameter("invitation", invitation)
+                .getSingleResult();
+    }
 }
