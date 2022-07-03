@@ -1,11 +1,11 @@
 #!/bin/bash
 
-REPOSITORY=/home/ec2-user/app/step2/zip
+REPOSITORY=/home/ec2-user/app/deploy
 
 echo">check running pid"
 
 
-CURRENT_PID=$(pgrep -f 2Cube)
+CURRENT_PID=$(pgrep -f aenitto)
 
 
 echo "> CURRENT_PID"
@@ -35,6 +35,6 @@ echo "> give authority to $JAR_NAME"
 chmod +x $JAR_NAME
 
 nohup java -jar \
-    -Dspring.config.location=classpath:/application.yml,/home/ec2-user/app/application-develop.yml,/home/ec2-user/app/application-developdb.yml\
+    -Dspring.config.location=classpath:/application.yml,/home/ec2-user/app/deploy/application-developdb.yml\
     -Dspring.profiles.active=develop \
     $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
