@@ -1,5 +1,7 @@
 package com.firefighter.aenitto.rooms.repository;
 
+import com.firefighter.aenitto.members.domain.Member;
+import com.firefighter.aenitto.rooms.domain.MemberRoom;
 import com.firefighter.aenitto.rooms.domain.Room;
 import com.firefighter.aenitto.rooms.domain.RoomState;
 import org.junit.jupiter.api.BeforeEach;
@@ -100,6 +102,27 @@ class RoomRepositoryImplTest {
         })
                 .isInstanceOf(EmptyResultDataAccessException.class);
 
+    }
+
+    @DisplayName("MemberRoom 연관관계 메서드 setMemberRoom")
+    @Test
+    void setMemberRoomTest() {
+        // given
+        Member member = Member.builder().build();
+        em.persist(member);
+        roomRepository.saveRoom(room);
+
+        MemberRoom memberRoom = MemberRoom.builder().admin(false).build();
+        memberRoom.setMemberRoom(member, room);
+        em.flush();
+
+        // when
+        MemberRoom memberRoom1 = em.find(MemberRoom.class, memberRoom.getId());
+
+        // then
+        assertThat(memberRoom1).isEqualTo(memberRoom);
+        assertThat(memberRoom1.getMember()).isEqualTo(member);
+        assertThat(memberRoom1.getRoom()).isEqualTo(room);
     }
 
 }
