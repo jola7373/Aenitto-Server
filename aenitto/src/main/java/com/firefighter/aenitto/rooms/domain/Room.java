@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Room extends CreationModificationLog {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,7 +34,7 @@ public class Room extends CreationModificationLog {
     private String invitation;
 
     @Enumerated(value = EnumType.STRING)
-    private RoomState state;
+    private RoomState state = RoomState.PRE;
 
     @ColumnDefault(value = "false")
     private boolean deleted;
@@ -42,10 +44,9 @@ public class Room extends CreationModificationLog {
     private LocalDate endDate;
 
     @Builder
-    public Room(int capacity, String invitation, RoomState state, String startDate, String endDate) {
+    public Room(int capacity, String invitation, String startDate, String endDate) {
         this.capacity = capacity;
         this.invitation = invitation;
-        this.state = state;
         this.startDate = stringToLocalDate(startDate);
         this.endDate = stringToLocalDate(endDate);
     }
