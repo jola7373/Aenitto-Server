@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.*;
@@ -42,7 +43,7 @@ public class RoomServiceTest {
                 .thenThrow(EmptyResultDataAccessException.class)
                 .thenThrow(EmptyResultDataAccessException.class)
                 .thenReturn(Room.builder().build());
-        when(memberRepository.findByMemberId(anyLong())).thenReturn(Member.builder().nickname("리오").build());
+        when(memberRepository.findByMemberId(any(UUID.class))).thenReturn(Member.builder().nickname("리오").build());
 
 
         // given
@@ -55,7 +56,7 @@ public class RoomServiceTest {
 
 
         // when
-        Room room = target.createRoom(0L, roomRequest);
+        Room room = target.createRoom(UUID.randomUUID(), roomRequest);
 
         // then
         assertThat(room.getMemberRooms()).hasSize(1);

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.util.UUID;
 
 @Repository
 @Qualifier(value = "memberRepositoryImpl")
@@ -15,7 +16,7 @@ public class MemberRepositoryImpl implements MemberRepository {
     private final EntityManager em;
 
     @Override
-    public Member findByMemberId(Long memberId) {
+    public Member findByMemberId(UUID memberId) {
         return em.find(Member.class, memberId);
     }
 }
