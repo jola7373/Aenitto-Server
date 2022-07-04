@@ -20,14 +20,14 @@ public class DatetimeTest {
         LocalDate parse = LocalDate.parse(dateString, dateTimeFormatter);
 
         // then
-        assertThat(parse).isEqualTo(LocalDate.now());
+        assertThat(parse).isEqualTo(LocalDate.of(2022, 6, 30));
     }
 
     @DisplayName("LocalDate -> String 테스트")
     @Test
     void LocalDateToStringTest() {
         // given
-        LocalDate now = LocalDate.now();
+        LocalDate now = LocalDate.of(2022, 6, 30);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 
         // when
