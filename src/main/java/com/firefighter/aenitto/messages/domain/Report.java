@@ -2,7 +2,6 @@ package com.firefighter.aenitto.messages.domain;
 
 import com.firefighter.aenitto.common.baseEntities.CreationLog;
 import com.firefighter.aenitto.members.domain.Member;
-import com.firefighter.aenitto.messages.domain.Message;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
