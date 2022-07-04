@@ -5,6 +5,11 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
+  profiles:
+    active: test # 활성화시킬 프로필
+#    group: # 포함시킬 하위 프로필명
+#      develop: develop, developdb
+
 ---
 ### Test Profile
 spring:
@@ -18,10 +23,23 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.H2Dialect
     generate-ddl: true
     show-sql: true
+
+---
+### Develop Profile
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: 'true'
+    show-sql: 'true'
+
+  session:
+    store-type: jdbc
