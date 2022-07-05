@@ -6,15 +6,18 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Entity
 @Getter
+@DynamicInsert
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Room extends CreationModificationLog {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,12 +30,13 @@ public class Room extends CreationModificationLog {
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<Relation> relations = new ArrayList<>();
 
+    private String title;
     private int capacity;
 
     private String invitation;
 
     @Enumerated(value = EnumType.STRING)
-    private RoomState state;
+    private RoomState state = RoomState.PRE;
 
     @ColumnDefault(value = "false")
     private boolean deleted;
@@ -42,19 +46,25 @@ public class Room extends CreationModificationLog {
     private LocalDate endDate;
 
     @Builder
-    public Room(int capacity, String invitation, RoomState state, String startDate, String endDate) {
+    public Room(String title, int capacity, String invitation, LocalDate startDate, LocalDate endDate) {
+        this.title = title;
         this.capacity = capacity;
         this.invitation = invitation;
-        this.state = state;
-        this.startDate = stringToLocalDate(startDate);
-        this.endDate = stringToLocalDate(endDate);
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
-    private String localDateToString(LocalDate date) {
-        return date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+    public void createInvitation() {
+        this.invitation = randomSixNumUpperString();
     }
 
-    private LocalDate stringToLocalDate(String date) {
-        return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+    private String randomSixNumUpperString() {
+        Random random = new Random();
+        return random.ints(48, 91)
+                .filter((rand) -> (rand < 58) || (rand >= 65))
+                .limit(6)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
     }
+
 }
