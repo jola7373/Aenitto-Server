@@ -20,7 +20,7 @@ repositories {
 }
 
 ext {
-	set('snippetsDir', file("build/generated-snippets"))
+	set('snippetsDir', file("out/generated-snippets"))
 }
 
 jar {

@@ -12,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MockMvcBuilder;
@@ -24,11 +26,16 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @ExtendWith(MockitoExtension.class)
+@AutoConfigureMockMvc
+@AutoConfigureRestDocs
 class RoomControllerTest {
     @InjectMocks
     RoomController roomController;
@@ -65,7 +72,14 @@ class RoomControllerTest {
 
         // then
         perform.andExpect(status().isCreated())
-                .andExpect(header().exists("Location"));
+                .andExpect(header().exists("Location"))
+                .andDo(document("post-create",
+                        requestFields( // 6
+                                fieldWithPath("title").description("Post 제목"), // 7
+                                fieldWithPath("content").description("Post 내용").optional() // 8
+                        )
+                ))
+        ;
     }
 
     @DisplayName("방 생성 -> 실패")
