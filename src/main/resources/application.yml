@@ -1,6 +1,45 @@
-
+### Default Profile
 spring:
   jpa:
     hibernate:
       naming:
-        physical-strategy: com.firefighter.aenitto.common.namingStrategy.SnakeLowerCasePhysicalNamingStrategy
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+  profiles:
+    active: develop # 활성화시킬 프로필
+    group: # 포함시킬 하위 프로필명
+      develop: develop, developdb
+
+---
+### Test Profile
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:tcp://localhost/~/h2/aenitto
+    username: sa
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+    generate-ddl: true
+    show-sql: true
+
+---
+### Develop Profile
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: 'true'
+    show-sql: 'true'
+
+  session:
+    store-type: jdbc
