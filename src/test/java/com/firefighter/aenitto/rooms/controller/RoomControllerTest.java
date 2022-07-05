@@ -34,8 +34,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @ExtendWith(MockitoExtension.class)
-@AutoConfigureMockMvc
-@AutoConfigureRestDocs
 class RoomControllerTest {
     @InjectMocks
     RoomController roomController;
@@ -72,14 +70,7 @@ class RoomControllerTest {
 
         // then
         perform.andExpect(status().isCreated())
-                .andExpect(header().exists("Location"))
-                .andDo(document("post-create",
-                        requestFields( // 6
-                                fieldWithPath("title").description("Post 제목"), // 7
-                                fieldWithPath("content").description("Post 내용").optional() // 8
-                        )
-                ))
-        ;
+                .andExpect(header().exists("Location"));
     }
 
     @DisplayName("방 생성 -> 실패")
