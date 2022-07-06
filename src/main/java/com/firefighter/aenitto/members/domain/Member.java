@@ -31,4 +31,8 @@ public class Member extends CreationModificationLog {
     public Member(String nickname) {
         this.nickname = nickname;
     }
+
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }
