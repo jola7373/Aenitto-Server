@@ -2,6 +2,7 @@ package com.firefighter.aenitto.rooms.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.firefighter.aenitto.members.domain.Member;
 import com.firefighter.aenitto.rooms.dto.RoomRequest;
 import com.firefighter.aenitto.rooms.service.RoomService;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +52,7 @@ class RoomControllerTest {
     @Test
     void createRoom() throws Exception {
         // Mock
-        when(roomService.createRoom(any(UUID.class), any(RoomRequest.class))).thenReturn(roomRequest().toEntity());
+        when(roomService.createRoom(any(Member.class), any(RoomRequest.class))).thenReturn(roomRequest().toEntity());
 
         // given
         final String uri = "/api/v1/rooms";

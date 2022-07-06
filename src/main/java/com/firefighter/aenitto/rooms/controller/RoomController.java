@@ -1,5 +1,6 @@
 package com.firefighter.aenitto.rooms.controller;
 
+import com.firefighter.aenitto.members.domain.Member;
 import com.firefighter.aenitto.rooms.domain.Room;
 import com.firefighter.aenitto.rooms.dto.RoomRequest;
 import com.firefighter.aenitto.rooms.service.RoomService;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -26,8 +26,8 @@ public class RoomController {
     public ResponseEntity createRoom(
             @Valid @RequestBody final RoomRequest roomRequest
     ) {
-        final UUID memberId = UUID.randomUUID();
-        final Room room = roomService.createRoom(memberId, roomRequest);
+        final Member member = Member.builder().nickname("mock").build();
+        final Room room = roomService.createRoom(member, roomRequest);
         return ResponseEntity.created(URI.create("/api/v1/rooms/" + room.getId())).build();
     }
 }

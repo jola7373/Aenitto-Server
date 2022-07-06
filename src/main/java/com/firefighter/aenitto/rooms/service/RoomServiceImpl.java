@@ -29,10 +29,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
-    public Room createRoom(UUID memberId, RoomRequest roomRequest) {
-        // find member
-        Member byMemberId = memberRepository.findByMemberId(memberId);
-
+    public Room createRoom(Member member, RoomRequest roomRequest) {
         // Dto -> Entity
         final Room room = roomRequest.toEntity();
 
@@ -51,7 +48,10 @@ public class RoomServiceImpl implements RoomService {
                 .admin(true)
                 .build();
 
-        memberRoom.setMemberRoom(byMemberId, room);
+        memberRoom.setMemberRoom(member, room);
+
+        roomRepository.saveRoom(room);
+        memberRepository.updateMember(member);
 
         return room;
     }

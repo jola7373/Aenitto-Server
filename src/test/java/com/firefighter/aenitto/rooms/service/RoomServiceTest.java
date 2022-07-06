@@ -13,7 +13,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -41,8 +43,6 @@ public class RoomServiceTest {
                 .thenThrow(EmptyResultDataAccessException.class)
                 .thenThrow(EmptyResultDataAccessException.class)
                 .thenReturn(Room.builder().build());
-        when(memberRepository.findByMemberId(any(UUID.class))).thenReturn(Member.builder().nickname("리오").build());
-
 
         // given
         RoomRequest roomRequest = RoomRequest.builder()
@@ -52,17 +52,15 @@ public class RoomServiceTest {
                 .endDate("2022.07.23")
                 .build();
 
-
         // when
-        Room room = target.createRoom(UUID.randomUUID(), roomRequest);
+        Room room = target.createRoom(Member.builder().build(), roomRequest);
 
         // then
         assertThat(room.getMemberRooms()).hasSize(1);
         MemberRoom memberRoom = room.getMemberRooms().get(0);
         assertThat(memberRoom.isAdmin()).isTrue();
-
-
+        verify(roomRepository, times(1)).saveRoom(any(Room.class));
+        verify(memberRepository, times(1)).updateMember(any(Member.class));
     }
-
 
 }
