@@ -19,6 +19,11 @@ public class RoomRepositoryImpl implements RoomRepository {
     }
 
     @Override
+    public Room mergeRoom(Room room) {
+        return em.merge(room);
+    }
+
+    @Override
     public Room findRoomById(Long id) {
         return em.find(Room.class, id);
     }
