@@ -27,7 +27,7 @@ public class RoomController {
             @Valid @RequestBody final RoomRequest roomRequest
     ) {
         final Member member = Member.builder().nickname("mock").build();
-        final Room room = roomService.createRoom(member, roomRequest);
-        return ResponseEntity.created(URI.create("/api/v1/rooms/" + room.getId())).build();
+        final Long roomId = roomService.createRoom(member, roomRequest);
+        return ResponseEntity.created(URI.create("/api/v1/rooms/" + roomId)).build();
     }
 }

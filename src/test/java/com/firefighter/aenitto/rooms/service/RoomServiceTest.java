@@ -7,6 +7,7 @@ import com.firefighter.aenitto.rooms.domain.MemberRoom;
 import com.firefighter.aenitto.rooms.domain.Room;
 import com.firefighter.aenitto.rooms.dto.RoomRequest;
 import com.firefighter.aenitto.rooms.repository.RoomRepositoryImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+import static com.firefighter.aenitto.rooms.RoomFixture.ROOM_1;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -34,6 +36,14 @@ public class RoomServiceTest {
     @Mock
     private MemberRepositoryImpl memberRepository;
 
+    // Fixtures
+    private Room room;
+
+    @BeforeEach
+    void setup() {
+        room = ROOM_1;
+    }
+
     @DisplayName("방 생성 성공")
     @Test
     void createRoomTest() {
@@ -43,6 +53,8 @@ public class RoomServiceTest {
                 .thenThrow(EmptyResultDataAccessException.class)
                 .thenThrow(EmptyResultDataAccessException.class)
                 .thenReturn(Room.builder().build());
+        when(roomRepository.saveRoom(any(Room.class)))
+                .thenReturn(room);
 
         // given
         RoomRequest roomRequest = RoomRequest.builder()
@@ -53,12 +65,10 @@ public class RoomServiceTest {
                 .build();
 
         // when
-        Room room = target.createRoom(Member.builder().build(), roomRequest);
+        Long roomId = target.createRoom(Member.builder().build(), roomRequest);
 
         // then
-        assertThat(room.getMemberRooms()).hasSize(1);
-        MemberRoom memberRoom = room.getMemberRooms().get(0);
-        assertThat(memberRoom.isAdmin()).isTrue();
+        assertThat(roomId).isEqualTo(1L);
         verify(roomRepository, times(1)).saveRoom(any(Room.class));
         verify(memberRepository, times(1)).updateMember(any(Member.class));
     }

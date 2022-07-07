@@ -7,5 +7,5 @@ import com.firefighter.aenitto.rooms.dto.RoomRequest;
 import java.util.UUID;
 
 public interface RoomService {
-    public Room createRoom(Member member, RoomRequest roomRequest);
+    public Long createRoom(Member member, RoomRequest roomRequest);
 }

@@ -29,7 +29,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
-    public Room createRoom(Member member, RoomRequest roomRequest) {
+    public Long createRoom(Member member, RoomRequest roomRequest) {
         // Dto -> Entity
         final Room room = roomRequest.toEntity();
 
@@ -50,10 +50,8 @@ public class RoomServiceImpl implements RoomService {
 
         memberRoom.setMemberRoom(member, room);
 
-        roomRepository.saveRoom(room);
         memberRepository.updateMember(member);
-
-        return room;
+        return roomRepository.saveRoom(room).getId();
     }
 
 }

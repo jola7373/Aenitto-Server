@@ -3,6 +3,7 @@ package com.firefighter.aenitto.rooms.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.firefighter.aenitto.members.domain.Member;
+import com.firefighter.aenitto.rooms.domain.Room;
 import com.firefighter.aenitto.rooms.dto.RoomRequest;
 import com.firefighter.aenitto.rooms.service.RoomService;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.UUID;
 
+import static com.firefighter.aenitto.rooms.RoomFixture.ROOM_1;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -40,19 +42,21 @@ class RoomControllerTest {
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
 
-
+    // Fixture
+    private Room room;
 
     @BeforeEach
     void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(roomController).build();
         objectMapper = new ObjectMapper();
+        room = ROOM_1;
     }
 
     @DisplayName("방 생성 -> 성공")
     @Test
     void createRoom() throws Exception {
         // Mock
-        when(roomService.createRoom(any(Member.class), any(RoomRequest.class))).thenReturn(roomRequest().toEntity());
+        when(roomService.createRoom(any(Member.class), any(RoomRequest.class))).thenReturn(1L);
 
         // given
         final String uri = "/api/v1/rooms";
