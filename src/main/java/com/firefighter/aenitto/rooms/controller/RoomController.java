@@ -1,8 +1,7 @@
 package com.firefighter.aenitto.rooms.controller;
 
 import com.firefighter.aenitto.members.domain.Member;
-import com.firefighter.aenitto.rooms.domain.Room;
-import com.firefighter.aenitto.rooms.dto.RoomRequest;
+import com.firefighter.aenitto.rooms.dto.CreateRoomRequest;
 import com.firefighter.aenitto.rooms.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,10 +23,10 @@ public class RoomController {
 
     @PostMapping("/rooms")
     public ResponseEntity createRoom(
-            @Valid @RequestBody final RoomRequest roomRequest
+            @Valid @RequestBody final CreateRoomRequest createRoomRequest
     ) {
         final Member member = Member.builder().nickname("mock").build();
-        final Long roomId = roomService.createRoom(member, roomRequest);
+        final Long roomId = roomService.createRoom(member, createRoomRequest);
         return ResponseEntity.created(URI.create("/api/v1/rooms/" + roomId)).build();
     }
 }

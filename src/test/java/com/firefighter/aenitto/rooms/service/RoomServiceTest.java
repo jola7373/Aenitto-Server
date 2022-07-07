@@ -1,11 +1,9 @@
 package com.firefighter.aenitto.rooms.service;
 
 import com.firefighter.aenitto.members.domain.Member;
-import com.firefighter.aenitto.members.repository.MemberRepository;
 import com.firefighter.aenitto.members.repository.MemberRepositoryImpl;
-import com.firefighter.aenitto.rooms.domain.MemberRoom;
 import com.firefighter.aenitto.rooms.domain.Room;
-import com.firefighter.aenitto.rooms.dto.RoomRequest;
+import com.firefighter.aenitto.rooms.dto.CreateRoomRequest;
 import com.firefighter.aenitto.rooms.repository.RoomRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,11 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 import static com.firefighter.aenitto.rooms.RoomFixture.ROOM_1;
 import static org.mockito.Mockito.*;
@@ -57,7 +51,7 @@ public class RoomServiceTest {
                 .thenReturn(room);
 
         // given
-        RoomRequest roomRequest = RoomRequest.builder()
+        CreateRoomRequest createRoomRequest = CreateRoomRequest.builder()
                 .title("방제목")
                 .capacity(10)
                 .startDate("2022.06.22")
@@ -65,7 +59,7 @@ public class RoomServiceTest {
                 .build();
 
         // when
-        Long roomId = target.createRoom(Member.builder().build(), roomRequest);
+        Long roomId = target.createRoom(Member.builder().build(), createRoomRequest);
 
         // then
         assertThat(roomId).isEqualTo(1L);
