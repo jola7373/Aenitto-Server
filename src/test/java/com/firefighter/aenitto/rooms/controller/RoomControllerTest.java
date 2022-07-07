@@ -3,7 +3,7 @@ package com.firefighter.aenitto.rooms.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.firefighter.aenitto.members.domain.Member;
 import com.firefighter.aenitto.rooms.domain.Room;
-import com.firefighter.aenitto.rooms.dto.CreateRoomRequest;
+import com.firefighter.aenitto.rooms.dto.request.CreateRoomRequest;
 import com.firefighter.aenitto.rooms.service.RoomService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

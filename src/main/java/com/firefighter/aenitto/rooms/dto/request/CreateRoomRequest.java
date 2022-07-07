@@ -1,4 +1,4 @@
-package com.firefighter.aenitto.rooms.dto;
+package com.firefighter.aenitto.rooms.dto.request;
 
 import com.firefighter.aenitto.common.utils.DateConverter;
 import com.firefighter.aenitto.rooms.domain.Room;

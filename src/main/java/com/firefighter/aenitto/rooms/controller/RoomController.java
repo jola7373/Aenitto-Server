@@ -1,7 +1,7 @@
 package com.firefighter.aenitto.rooms.controller;
 
 import com.firefighter.aenitto.members.domain.Member;
-import com.firefighter.aenitto.rooms.dto.CreateRoomRequest;
+import com.firefighter.aenitto.rooms.dto.request.CreateRoomRequest;
 import com.firefighter.aenitto.rooms.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
