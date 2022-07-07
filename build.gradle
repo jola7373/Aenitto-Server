@@ -15,6 +15,13 @@ configurations {
 	}
 }
 
+//bootJar {
+//	dependsOn asciidoctor // (3)
+//	from ("$/html5") { // (4)
+//		into 'static/docs'
+//	}
+//}
+
 repositories {
 	mavenCentral()
 }
