@@ -24,7 +24,7 @@ public class Member extends CreationModificationLog {
 
     private String nickname;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member")
     private List<MemberRoom> memberRooms = new ArrayList<>();
 
     @Builder
