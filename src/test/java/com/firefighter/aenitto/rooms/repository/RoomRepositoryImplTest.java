@@ -197,5 +197,37 @@ class RoomRepositoryImplTest {
         assertThat(memberRoomById.isAdmin()).isEqualTo(false);
     }
 
+    @DisplayName("방 참가 테스트 (Member, Room - detached, MemberRoom - transient")
+    @Test
+    void participateRoom() {
+        // given
+        em.persist(member);
+        em.persist(room);
+
+        em.flush();
+        em.clear();
+
+        MemberRoom memberRoom = MemberRoom.builder().admin(false).colorIdx(1).build();
+
+        // when
+        Room findRoom = em.find(Room.class, room.getId());
+        memberRoom.setMemberRoom(member, findRoom);
+        em.merge(member);
+
+        em.flush();
+        em.clear();
+
+        // then
+        Member member1 = em.find(Member.class, member.getId());
+        MemberRoom memberRoom1 = em.find(MemberRoom.class, memberRoom.getId());
+        Room room1 = em.find(Room.class, room.getId());
+
+        assertNotNull(member1);
+        assertNotNull(room1);
+        assertNotNull(memberRoom1);
+        assertThat(member1.getMemberRooms().size()).isEqualTo(1);
+        assertThat(room1.getMemberRooms().size()).isEqualTo(1);
+
+    }
 
 }
