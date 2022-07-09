@@ -2,8 +2,11 @@ package com.firefighter.aenitto.rooms.service;
 
 import com.firefighter.aenitto.members.domain.Member;
 import com.firefighter.aenitto.members.repository.MemberRepositoryImpl;
+import com.firefighter.aenitto.rooms.domain.MemberRoom;
 import com.firefighter.aenitto.rooms.domain.Room;
 import com.firefighter.aenitto.rooms.dto.request.CreateRoomRequest;
+import com.firefighter.aenitto.rooms.dto.request.VerifyInviationRequest;
+import com.firefighter.aenitto.rooms.dto.response.VerifyInvitationResponse;
 import com.firefighter.aenitto.rooms.repository.RoomRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +17,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import java.util.UUID;
+
+import static com.firefighter.aenitto.members.MemberFixture.MEMBER_1;
+import static com.firefighter.aenitto.rooms.RoomFixture.MEMBER_ROOM_1;
 import static com.firefighter.aenitto.rooms.RoomFixture.ROOM_1;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;
@@ -32,10 +39,14 @@ public class RoomServiceTest {
 
     // Fixtures
     private Room room;
+    private Member member;
+    private MemberRoom memberRoom;
 
     @BeforeEach
     void setup() {
         room = ROOM_1;
+        member = MEMBER_1;
+        memberRoom = MEMBER_ROOM_1;
     }
 
     @DisplayName("방 생성 성공")
@@ -65,6 +76,73 @@ public class RoomServiceTest {
         assertThat(roomId).isEqualTo(1L);
         verify(roomRepository, times(1)).saveRoom(any(Room.class));
         verify(memberRepository, times(1)).updateMember(any(Member.class));
+    }
+
+    @DisplayName("초대코드 검증 - 실패 (초대코드 존재하지 않음)")
+    @Test
+    void verifyInvitation_fail_invalid() {
+        // mock
+        when(roomRepository.findByInvitation(anyString()))
+                .thenThrow(EmptyResultDataAccessException.class);
+
+        // given
+        final VerifyInviationRequest request = verifyInviationRequest();
+
+        // when, then
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> {
+                    target.verifyInvitation(member, request);
+                });
+        verify(roomRepository, times(1)).findByInvitation(anyString());
+    }
+
+    @DisplayName("초대코드 검증 - 실패 (이미 유저가 참여중인 방)")
+    @Test
+    void verifyInvitation_fail_participating() {
+        // mock
+        when(roomRepository.findByInvitation(anyString()))
+                .thenReturn(room);
+        when(roomRepository.findMemberRoomById(any(), anyLong()))
+                .thenReturn(memberRoom);
+
+        // then
+        final VerifyInviationRequest verifyInviationRequest = verifyInviationRequest();
+
+        // when, then
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> {
+                    target.verifyInvitation(member, verifyInviationRequest);
+                });
+        verify(roomRepository, times(1)).findByInvitation(anyString());
+        verify(roomRepository, times(1)).findMemberRoomById(any(), anyLong());
+    }
+
+    @DisplayName("초대코드 검증 - 성공")
+    @Test
+    void verifyInvitation_success() {
+        // mock
+        when(roomRepository.findByInvitation(anyString()))
+                .thenReturn(room);
+        when(roomRepository.findMemberRoomById(eq(member.getId()), anyLong()))
+                .thenThrow(EmptyResultDataAccessException.class);
+
+        // given
+        final VerifyInviationRequest verifyInviationRequest = verifyInviationRequest();
+
+        // when
+        VerifyInvitationResponse response = target.verifyInvitation(member, verifyInviationRequest);
+
+        // then
+        assertThat(response.getCapacity()).isEqualTo(room.getCapacity());
+        assertThat(response.getId()).isEqualTo(room.getId());
+        assertThat(response.getTitle()).isEqualTo(room.getTitle());
+        verify(roomRepository, times(1)).findByInvitation(anyString());
+    }
+
+    private VerifyInviationRequest verifyInviationRequest() {
+        return VerifyInviationRequest.builder()
+                .invitationCode("5R2DV2")
+                .build();
     }
 
 }
