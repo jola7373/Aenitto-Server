@@ -9,12 +9,13 @@ import javax.validation.constraints.Size;
 
 @Getter
 @NoArgsConstructor(force = true)
-public class VerifyInviationRequest {
+public class VerifyInvitationRequest {
     @NotNull
+    @Size(min = 6, max = 6)
     private final String invitationCode;
 
     @Builder
-    public VerifyInviationRequest(String invitationCode) {
+    public VerifyInvitationRequest(String invitationCode) {
         this.invitationCode = invitationCode;
     }
 }

@@ -5,7 +5,7 @@ import com.firefighter.aenitto.members.repository.MemberRepository;
 import com.firefighter.aenitto.rooms.domain.MemberRoom;
 import com.firefighter.aenitto.rooms.domain.Room;
 import com.firefighter.aenitto.rooms.dto.request.CreateRoomRequest;
-import com.firefighter.aenitto.rooms.dto.request.VerifyInviationRequest;
+import com.firefighter.aenitto.rooms.dto.request.VerifyInvitationRequest;
 import com.firefighter.aenitto.rooms.dto.response.VerifyInvitationResponse;
 import com.firefighter.aenitto.rooms.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -56,8 +56,8 @@ public class RoomServiceImpl implements RoomService {
 
 
     @Override
-    public VerifyInvitationResponse verifyInvitation(Member member, VerifyInviationRequest verifyInviationRequest) {
-        final String invitation = verifyInviationRequest.getInvitationCode();
+    public VerifyInvitationResponse verifyInvitation(Member member, VerifyInvitationRequest verifyInvitationRequest) {
+        final String invitation = verifyInvitationRequest.getInvitationCode();
         Room findRoom;
 
         // 초대코드로 Room 조회 -> 결과가 없을 경우 throw

@@ -5,7 +5,7 @@ import com.firefighter.aenitto.members.repository.MemberRepositoryImpl;
 import com.firefighter.aenitto.rooms.domain.MemberRoom;
 import com.firefighter.aenitto.rooms.domain.Room;
 import com.firefighter.aenitto.rooms.dto.request.CreateRoomRequest;
-import com.firefighter.aenitto.rooms.dto.request.VerifyInviationRequest;
+import com.firefighter.aenitto.rooms.dto.request.VerifyInvitationRequest;
 import com.firefighter.aenitto.rooms.dto.response.VerifyInvitationResponse;
 import com.firefighter.aenitto.rooms.repository.RoomRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,8 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.EmptyResultDataAccessException;
-
-import java.util.UUID;
 
 import static com.firefighter.aenitto.members.MemberFixture.MEMBER_1;
 import static com.firefighter.aenitto.rooms.RoomFixture.MEMBER_ROOM_1;
@@ -86,7 +84,7 @@ public class RoomServiceTest {
                 .thenThrow(EmptyResultDataAccessException.class);
 
         // given
-        final VerifyInviationRequest request = verifyInviationRequest();
+        final VerifyInvitationRequest request = verifyInviationRequest();
 
         // when, then
         assertThatExceptionOfType(IllegalArgumentException.class)
@@ -106,12 +104,12 @@ public class RoomServiceTest {
                 .thenReturn(memberRoom);
 
         // then
-        final VerifyInviationRequest verifyInviationRequest = verifyInviationRequest();
+        final VerifyInvitationRequest verifyInvitationRequest = verifyInviationRequest();
 
         // when, then
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> {
-                    target.verifyInvitation(member, verifyInviationRequest);
+                    target.verifyInvitation(member, verifyInvitationRequest);
                 });
         verify(roomRepository, times(1)).findByInvitation(anyString());
         verify(roomRepository, times(1)).findMemberRoomById(any(), anyLong());
@@ -127,10 +125,10 @@ public class RoomServiceTest {
                 .thenThrow(EmptyResultDataAccessException.class);
 
         // given
-        final VerifyInviationRequest verifyInviationRequest = verifyInviationRequest();
+        final VerifyInvitationRequest verifyInvitationRequest = verifyInviationRequest();
 
         // when
-        VerifyInvitationResponse response = target.verifyInvitation(member, verifyInviationRequest);
+        VerifyInvitationResponse response = target.verifyInvitation(member, verifyInvitationRequest);
 
         // then
         assertThat(response.getCapacity()).isEqualTo(room.getCapacity());
@@ -139,8 +137,8 @@ public class RoomServiceTest {
         verify(roomRepository, times(1)).findByInvitation(anyString());
     }
 
-    private VerifyInviationRequest verifyInviationRequest() {
-        return VerifyInviationRequest.builder()
+    private VerifyInvitationRequest verifyInviationRequest() {
+        return VerifyInvitationRequest.builder()
                 .invitationCode("5R2DV2")
                 .build();
     }
