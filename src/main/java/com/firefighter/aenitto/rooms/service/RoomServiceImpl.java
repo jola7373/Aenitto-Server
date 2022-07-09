@@ -5,6 +5,8 @@ import com.firefighter.aenitto.members.repository.MemberRepository;
 import com.firefighter.aenitto.rooms.domain.MemberRoom;
 import com.firefighter.aenitto.rooms.domain.Room;
 import com.firefighter.aenitto.rooms.dto.request.CreateRoomRequest;
+import com.firefighter.aenitto.rooms.dto.request.VerifyInviationRequest;
+import com.firefighter.aenitto.rooms.dto.response.VerifyInvitationResponse;
 import com.firefighter.aenitto.rooms.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -52,4 +54,26 @@ public class RoomServiceImpl implements RoomService {
         return roomRepository.saveRoom(room).getId();
     }
 
+
+    @Override
+    public VerifyInvitationResponse verifyInvitation(Member member, VerifyInviationRequest verifyInviationRequest) {
+        final String invitation = verifyInviationRequest.getInvitationCode();
+        Room findRoom;
+
+        // 초대코드로 Room 조회 -> 결과가 없을 경우 throw
+        try {
+            findRoom = roomRepository.findByInvitation(invitation);
+        } catch (EmptyResultDataAccessException e) {
+            throw new IllegalArgumentException("초대코드 없음");
+        }
+
+        // roomId와 memberId로 MemberRoom 조회 -> 결과가 있을 경우 throw
+        try {
+            roomRepository.findMemberRoomById(member.getId(), findRoom.getId());
+            throw new IllegalArgumentException("이미 참여 중인 방");
+        } catch (EmptyResultDataAccessException e) {
+            return VerifyInvitationResponse.from(findRoom);
+        }
+
+    }
 }
