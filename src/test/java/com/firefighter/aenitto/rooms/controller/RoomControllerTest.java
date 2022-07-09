@@ -1,8 +1,9 @@
 package com.firefighter.aenitto.rooms.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.firefighter.aenitto.rooms.dto.RoomRequest;
+import com.firefighter.aenitto.members.domain.Member;
+import com.firefighter.aenitto.rooms.domain.Room;
+import com.firefighter.aenitto.rooms.dto.request.CreateRoomRequest;
 import com.firefighter.aenitto.rooms.service.RoomService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,15 +15,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.assertj.core.api.Assertions.*;
+import static com.firefighter.aenitto.rooms.RoomFixture.ROOM_1;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,19 +36,21 @@ class RoomControllerTest {
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
 
-
+    // Fixture
+    private Room room;
 
     @BeforeEach
     void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(roomController).build();
         objectMapper = new ObjectMapper();
+        room = ROOM_1;
     }
 
     @DisplayName("방 생성 -> 성공")
     @Test
     void createRoom() throws Exception {
         // Mock
-        when(roomService.createRoom(any(UUID.class), any(RoomRequest.class))).thenReturn(roomRequest().toEntity());
+        when(roomService.createRoom(any(Member.class), any(CreateRoomRequest.class))).thenReturn(1L);
 
         // given
         final String uri = "/api/v1/rooms";
@@ -78,11 +77,12 @@ class RoomControllerTest {
         final ResultActions perform = mockMvc.perform(
                 MockMvcRequestBuilders.post(uri)
                         .content(objectMapper.writeValueAsString(
-                                RoomRequest.builder()
-                                        .title("qqqqqqqqq")
+                                CreateRoomRequest.builder()
+                                        .title("qqqqqqqqqqqqqqq")
                                         .capacity(10)
                                         .startDate("2022.06.20")
                                         .endDate("2022.06.30")
+                                        .colorIdx(1)
                                         .build())
                         ).contentType(MediaType.APPLICATION_JSON)
         );
@@ -90,7 +90,7 @@ class RoomControllerTest {
         final ResultActions perform1 = mockMvc.perform(
                 MockMvcRequestBuilders.post(uri)
                         .content(objectMapper.writeValueAsString(
-                                RoomRequest.builder()
+                                CreateRoomRequest.builder()
                                         .title("자자자")
                                         .capacity(16)
                                         .endDate("2022.06.30")
@@ -104,8 +104,8 @@ class RoomControllerTest {
         perform1.andExpect(status().isBadRequest());
     }
 
-    private RoomRequest roomRequest() {
-        return RoomRequest.builder()
+    private CreateRoomRequest roomRequest() {
+        return CreateRoomRequest.builder()
                 .title("title")
                 .capacity(10)
                 .startDate("2022.06.20")

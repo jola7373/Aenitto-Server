@@ -14,8 +14,14 @@ public class RoomRepositoryImpl implements RoomRepository {
     private final EntityManager em;
 
     @Override
-    public void saveRoom(Room room) {
+    public Room saveRoom(Room room) {
         em.persist(room);
+        return room;
+    }
+
+    @Override
+    public Room mergeRoom(Room room) {
+        return em.merge(room);
     }
 
     @Override

@@ -19,7 +19,7 @@ import java.util.UUID;
 public class Member extends CreationModificationLog {
     @Id @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(name = "member_id", columnDefinition = "BINARY(225)")
+    @Column(name = "member_id", columnDefinition = "BINARY(16)")
     private UUID id;
 
     private String nickname;
@@ -29,6 +29,10 @@ public class Member extends CreationModificationLog {
 
     @Builder
     public Member(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void changeNickname(String nickname) {
         this.nickname = nickname;
     }
 }

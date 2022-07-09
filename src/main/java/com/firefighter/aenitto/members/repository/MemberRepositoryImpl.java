@@ -18,4 +18,14 @@ public class MemberRepositoryImpl implements MemberRepository {
     public Member findByMemberId(UUID memberId) {
         return em.find(Member.class, memberId);
     }
+
+    @Override
+    public Member updateMember(Member member) {
+        return em.merge(member);
+    }
+
+    @Override
+    public void saveMember(Member member) {
+        em.persist(member);
+    }
 }

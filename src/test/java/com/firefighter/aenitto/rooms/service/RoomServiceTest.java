@@ -1,12 +1,11 @@
 package com.firefighter.aenitto.rooms.service;
 
 import com.firefighter.aenitto.members.domain.Member;
-import com.firefighter.aenitto.members.repository.MemberRepository;
 import com.firefighter.aenitto.members.repository.MemberRepositoryImpl;
-import com.firefighter.aenitto.rooms.domain.MemberRoom;
 import com.firefighter.aenitto.rooms.domain.Room;
-import com.firefighter.aenitto.rooms.dto.RoomRequest;
+import com.firefighter.aenitto.rooms.dto.request.CreateRoomRequest;
 import com.firefighter.aenitto.rooms.repository.RoomRepositoryImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,8 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import java.util.UUID;
-
+import static com.firefighter.aenitto.rooms.RoomFixture.ROOM_1;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -32,6 +30,14 @@ public class RoomServiceTest {
     @Mock
     private MemberRepositoryImpl memberRepository;
 
+    // Fixtures
+    private Room room;
+
+    @BeforeEach
+    void setup() {
+        room = ROOM_1;
+    }
+
     @DisplayName("방 생성 성공")
     @Test
     void createRoomTest() {
@@ -41,28 +47,24 @@ public class RoomServiceTest {
                 .thenThrow(EmptyResultDataAccessException.class)
                 .thenThrow(EmptyResultDataAccessException.class)
                 .thenReturn(Room.builder().build());
-        when(memberRepository.findByMemberId(any(UUID.class))).thenReturn(Member.builder().nickname("리오").build());
-
+        when(roomRepository.saveRoom(any(Room.class)))
+                .thenReturn(room);
 
         // given
-        RoomRequest roomRequest = RoomRequest.builder()
+        CreateRoomRequest createRoomRequest = CreateRoomRequest.builder()
                 .title("방제목")
                 .capacity(10)
                 .startDate("2022.06.22")
                 .endDate("2022.07.23")
                 .build();
 
-
         // when
-        Room room = target.createRoom(UUID.randomUUID(), roomRequest);
+        Long roomId = target.createRoom(Member.builder().build(), createRoomRequest);
 
         // then
-        assertThat(room.getMemberRooms()).hasSize(1);
-        MemberRoom memberRoom = room.getMemberRooms().get(0);
-        assertThat(memberRoom.isAdmin()).isTrue();
-
-
+        assertThat(roomId).isEqualTo(1L);
+        verify(roomRepository, times(1)).saveRoom(any(Room.class));
+        verify(memberRepository, times(1)).updateMember(any(Member.class));
     }
-
 
 }
