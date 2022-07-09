@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.firefighter.aenitto.members.domain.Member;
 import com.firefighter.aenitto.rooms.domain.Room;
 import com.firefighter.aenitto.rooms.dto.request.CreateRoomRequest;
+import com.firefighter.aenitto.rooms.dto.request.ParticipateRoomRequest;
 import com.firefighter.aenitto.rooms.dto.request.VerifyInvitationRequest;
 import com.firefighter.aenitto.rooms.dto.response.VerifyInvitationResponse;
 import com.firefighter.aenitto.rooms.service.RoomService;
@@ -22,6 +23,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static com.firefighter.aenitto.members.MemberFixture.MEMBER_1;
 import static com.firefighter.aenitto.rooms.RoomFixture.ROOM_1;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
@@ -40,6 +42,7 @@ class RoomControllerTest {
     private ObjectMapper objectMapper;
 
     // Fixture
+    private Member member;
     private Room room;
 
     @BeforeEach
@@ -47,6 +50,7 @@ class RoomControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(roomController).build();
         objectMapper = new ObjectMapper();
         room = ROOM_1;
+        member = MEMBER_1;
     }
 
     @DisplayName("방 생성 -> 성공")
@@ -151,6 +155,29 @@ class RoomControllerTest {
 
         // then
         perform.andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("방 참여 - 성공")
+    @Test
+    void participateRoom_success() throws Exception {
+        // given
+        final Long roomId = 1L;
+        final String url = "/api/v1/rooms/" + roomId + "/participants";
+        final ParticipateRoomRequest request = ParticipateRoomRequest.builder().colorIdx(1).build();
+        when(roomService.participateRoom(any(Member.class), anyLong(), any(ParticipateRoomRequest.class)))
+                .thenReturn(roomId);
+
+        // when
+        ResultActions perform = mockMvc.perform(
+                MockMvcRequestBuilders.post(url)
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        perform
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/api/v1/rooms/1"));
     }
 
     private CreateRoomRequest roomRequest() {
