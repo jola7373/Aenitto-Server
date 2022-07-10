@@ -32,6 +32,8 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -82,8 +84,9 @@ class RoomControllerTest {
         // then
         perform.andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
-                .andDo(document("post-create", // 5
-                        requestFields( // 6
+                .andDo(document("room-create", // 5
+                        preprocessRequest(prettyPrint()),
+                        requestFields(
                                 fieldWithPath("title").description("Post 제목"), // 7
                                 fieldWithPath("capacity").description("Post 내용").optional(), // 8
                                 fieldWithPath("startDate").description("시작일").optional(),
