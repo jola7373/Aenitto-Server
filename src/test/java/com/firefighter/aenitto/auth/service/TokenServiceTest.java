@@ -18,7 +18,6 @@ public class TokenServiceTest {
 
     private UUID testUUID = UUID.randomUUID();
     @InjectMocks
-    @Autowired
     private TokenService tokenService;
 
     @Test
@@ -34,5 +33,10 @@ public class TokenServiceTest {
         tokenService.verifyToken(token);
     }
 
-
+    @Test
+    public void refresh_토큰_검증하기() {
+        Token token = tokenService.generateToken("UUID입니다","가나다라");
+        System.out.println(token);
+        tokenService.verifyToken(token.getRefreshToken());
+    }
 }
