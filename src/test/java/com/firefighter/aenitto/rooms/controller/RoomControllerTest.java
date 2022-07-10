@@ -12,8 +12,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -21,11 +27,18 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.firefighter.aenitto.rooms.RoomFixture.ROOM_1;
 import static org.mockito.Mockito.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({RestDocumentationExtension.class, MockitoExtension.class})
+//@SpringBootTest
+@AutoConfigureMockMvc // -> webAppContextSetup(webApplicationContext)
+@AutoConfigureRestDocs
 class RoomControllerTest {
     @InjectMocks
     RoomController roomController;
@@ -33,6 +46,7 @@ class RoomControllerTest {
     @Mock @Qualifier("roomServiceImpl")
     RoomService roomService;
 
+    @Autowired
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
 
@@ -40,8 +54,10 @@ class RoomControllerTest {
     private Room room;
 
     @BeforeEach
-    void init() {
-        mockMvc = MockMvcBuilders.standaloneSetup(roomController).build();
+    void init(RestDocumentationContextProvider restDocumentation) {
+        mockMvc = MockMvcBuilders.standaloneSetup(roomController)
+                .apply(documentationConfiguration(restDocumentation))
+                .build();
         objectMapper = new ObjectMapper();
         room = ROOM_1;
     }
@@ -64,7 +80,15 @@ class RoomControllerTest {
 
         // then
         perform.andExpect(status().isCreated())
-                .andExpect(header().exists("Location"));
+                .andExpect(header().exists("Location"))
+                .andDo(document("post-create", // 5
+                        requestFields( // 6
+                                fieldWithPath("title").description("Post 제목"), // 7
+                                fieldWithPath("capacity").description("Post 내용").optional(), // 8
+                                fieldWithPath("startDate").description("시작일").optional(),
+                                fieldWithPath("endDate").description("마지막일")
+                        )
+                ));
     }
 
     @DisplayName("방 생성 -> 실패")
