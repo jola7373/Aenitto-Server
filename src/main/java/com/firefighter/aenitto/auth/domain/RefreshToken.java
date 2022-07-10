@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Token {
+public class RefreshToken {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "token_id")
     private Long id;
@@ -25,7 +25,7 @@ public class Token {
     private String refreshToken;
 
     @Builder
-    public Token(Long memberId, String refreshToken) {
+    public RefreshToken(Long memberId, String refreshToken) {
         this.memberId = memberId;
         this.refreshToken = refreshToken;
     }
