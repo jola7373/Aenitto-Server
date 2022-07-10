@@ -27,4 +27,12 @@ public class TokenServiceTest {
         System.out.println(">>>>>>>>>>>>>> token = " + token);
     }
 
+    @Test
+    public void access_토큰_검증하기() {
+        String token = tokenService.generateAccessToken("UUID입니다","가나다라");
+        System.out.println(token);
+        tokenService.verifyToken(token);
+    }
+
+
 }
