@@ -6,11 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RefreshToken {
+
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "token_id")
     private Long id;
@@ -19,13 +21,13 @@ public class RefreshToken {
     실제 mapping x
      */
     @Column(name = "member_id")
-    private Long memberId;
+    private UUID memberId;
 
     @Column
     private String refreshToken;
 
     @Builder
-    public RefreshToken(Long memberId, String refreshToken) {
+    public RefreshToken(UUID memberId, String refreshToken) {
         this.memberId = memberId;
         this.refreshToken = refreshToken;
     }
