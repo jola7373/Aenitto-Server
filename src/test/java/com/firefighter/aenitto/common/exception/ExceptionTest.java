@@ -3,6 +3,7 @@ package com.firefighter.aenitto.common.exception;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.firefighter.aenitto.common.exception.test.ExceptionTestController;
 
+import com.firefighter.aenitto.common.exception.test.RequestDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,15 +69,10 @@ public class ExceptionTest {
 
         // when
         ResultActions perform = mockMvc.perform(
-            MockMvcRequestBuilders.post(url)
-                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
-                .content(
-                    objectMapper.writeValueAsString(
-                        ExceptionTestController.RequestDto.builder()
-                            .age(120)
-                            .build()
-                    )
-                )
+                MockMvcRequestBuilders.post(url)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .content(
+                                objectMapper.writeValueAsString(new RequestDto(null, 120)))
         );
 
         perform
