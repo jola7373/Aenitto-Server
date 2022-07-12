@@ -20,7 +20,7 @@ public class RefreshToken {
     /*
     실제 mapping x
      */
-    @Column(name = "member_id")
+    @Column(columnDefinition = "BINARY(16)")
     private UUID memberId;
 
     @Column

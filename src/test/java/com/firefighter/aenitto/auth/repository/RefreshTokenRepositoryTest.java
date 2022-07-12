@@ -52,4 +52,19 @@ public class RefreshTokenRepositoryTest {
         assertThat(result.getMemberId()).isEqualTo(UUID.fromString("b48617b2-090d-4ee6-9033-b99f99d98304"));
         assertThat(result.getRefreshToken()).isEqualTo("refreshToken입니다123123");
     }
+
+    @Test
+    @DisplayName("refreshToken 존재 여부 테스트")
+    public void 사용자가이미존재하는지테스트() {
+
+        // when
+        final RefreshToken result = refreshTokenRepository.saveRefreshToken(refreshToken);
+
+        final RefreshToken findResult = refreshTokenRepository.findByMemberId(result.getMemberId());
+
+        // then
+        assertThat(findResult.getId()).isNotNull();
+        assertThat(findResult.getMemberId()).isEqualTo(UUID.fromString("b48617b2-090d-4ee6-9033-b99f99d98304"));
+        assertThat(findResult.getRefreshToken()).isEqualTo("refreshToken입니다123123");
+    }
 }
