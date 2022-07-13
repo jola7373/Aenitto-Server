@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -20,7 +21,8 @@ public class RefreshToken {
     /*
     실제 mapping x
      */
-    @Column(columnDefinition = "BINARY(16)")
+    @Type(type="pg-uuid")
+    @Column(columnDefinition = "uuid")
     private UUID memberId;
 
     @Column
