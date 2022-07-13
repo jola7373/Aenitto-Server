@@ -50,7 +50,7 @@ class RoomControllerTest {
     RoomController roomController;
 
     @Mock @Qualifier("roomServiceImpl")
-    RoomService roomServe;
+    RoomService roomService;
 
     @Autowired
     private MockMvc mockMvc;
