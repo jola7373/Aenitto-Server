@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +40,35 @@ class RoomRepositoryImplTest {
                 .startDate(LocalDate.of(2022, 6, 27))
                 .endDate(LocalDate.of(2022, 6, 30))
                 .build();
+    }
+
+    @DisplayName("Room 정보 수정 테스트")
+    @Test
+    void mergeRoomTest() {
+        // given
+        roomRepository.saveRoom(room);
+        em.flush();
+        em.clear();
+
+        // room은 detached 상태
+        MemberRoom memberRoom = MemberRoom.builder().build();
+        Member member = Member.builder().build();
+        memberRoom.setMemberRoom(member, room);
+
+        assertThatExceptionOfType(InvalidDataAccessApiUsageException.class)
+                .isThrownBy(() -> {
+                    roomRepository.saveRoom(room);
+                });
+
+        Room merge = roomRepository.mergeRoom(room);
+
+        Room roomById = roomRepository.findRoomById(merge.getId());
+
+        // then
+        assertThat(roomById).isNotNull();
+        assertThat(roomById.getId()).isEqualTo(room.getId());
+        assertThat(roomById.getMemberRooms().size()).isEqualTo(1);
+
     }
 
 

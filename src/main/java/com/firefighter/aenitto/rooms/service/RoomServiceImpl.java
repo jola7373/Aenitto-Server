@@ -4,15 +4,13 @@ import com.firefighter.aenitto.members.domain.Member;
 import com.firefighter.aenitto.members.repository.MemberRepository;
 import com.firefighter.aenitto.rooms.domain.MemberRoom;
 import com.firefighter.aenitto.rooms.domain.Room;
-import com.firefighter.aenitto.rooms.dto.RoomRequest;
+import com.firefighter.aenitto.rooms.dto.request.CreateRoomRequest;
 import com.firefighter.aenitto.rooms.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Service
 @Qualifier(value = "roomServiceImpl")
@@ -29,12 +27,9 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     @Transactional
-    public Room createRoom(UUID memberId, RoomRequest roomRequest) {
-        // find member
-        Member byMemberId = memberRepository.findByMemberId(memberId);
-
+    public Long createRoom(Member member, CreateRoomRequest createRoomRequest) {
         // Dto -> Entity
-        final Room room = roomRequest.toEntity();
+        final Room room = createRoomRequest.toEntity();
 
         // Room invitation 생성 -> 존재하지 않는 random 코드 나올 때 까지.
         do {
@@ -51,9 +46,10 @@ public class RoomServiceImpl implements RoomService {
                 .admin(true)
                 .build();
 
-        memberRoom.setMemberRoom(byMemberId, room);
+        memberRoom.setMemberRoom(member, room);
 
-        return room;
+        memberRepository.updateMember(member);
+        return roomRepository.saveRoom(room).getId();
     }
 
 }

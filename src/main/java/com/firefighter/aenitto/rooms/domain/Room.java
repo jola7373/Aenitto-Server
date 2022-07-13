@@ -1,10 +1,7 @@
 package com.firefighter.aenitto.rooms.domain;
 
 import com.firefighter.aenitto.common.baseEntities.CreationModificationLog;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
@@ -46,7 +43,8 @@ public class Room extends CreationModificationLog {
     private LocalDate endDate;
 
     @Builder
-    public Room(String title, int capacity, String invitation, LocalDate startDate, LocalDate endDate) {
+    public Room(Long id, String title, int capacity, String invitation, LocalDate startDate, LocalDate endDate) {
+        this.id = id;
         this.title = title;
         this.capacity = capacity;
         this.invitation = invitation;
