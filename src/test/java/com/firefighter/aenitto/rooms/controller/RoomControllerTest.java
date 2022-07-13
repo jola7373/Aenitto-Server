@@ -160,7 +160,10 @@ class RoomControllerTest {
         perform
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.capacity", is(response.getCapacity())))
-                .andExpect(jsonPath("$.title", is(response.getTitle())));
+                .andExpect(jsonPath("$.title", is(response.getTitle())))
+                .andDo(document("초대코드 검증", requestFields(
+                        fieldWithPath("invitationCode").description("초대코드")
+                )));
     }
 
     @DisplayName("초대코드 검증 - 실패 (초대코드가 6자가 아닌 경우)")
@@ -203,7 +206,10 @@ class RoomControllerTest {
         // then
         perform
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/api/v1/rooms/1"));
+                .andExpect(header().string("Location", "/api/v1/rooms/1"))
+                .andDo(document("방 참여", requestFields(
+                        fieldWithPath("colorIdx").description("참여 색상")
+                )));
     }
 
     private CreateRoomRequest roomRequest() {
