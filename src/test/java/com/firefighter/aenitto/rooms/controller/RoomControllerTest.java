@@ -36,8 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @ExtendWith({RestDocumentationExtension.class, MockitoExtension.class})
-//@SpringBootTest
-@AutoConfigureMockMvc // -> webAppContextSetup(webApplicationContext)
+@AutoConfigureMockMvc
 @AutoConfigureRestDocs
 class RoomControllerTest {
     @InjectMocks
@@ -83,10 +82,11 @@ class RoomControllerTest {
                 .andExpect(header().exists("Location"))
                 .andDo(document("post-create", // 5
                         requestFields( // 6
-                                fieldWithPath("title").description("Post 제목"), // 7
-                                fieldWithPath("capacity").description("Post 내용").optional(), // 8
-                                fieldWithPath("startDate").description("시작일").optional(),
-                                fieldWithPath("endDate").description("마지막일")
+                                fieldWithPath("room.title").description("Post 제목"), // 7
+                                fieldWithPath("room.capacity").description("Post 내용").optional(), // 8
+                                fieldWithPath("room.startDate").description("시작일").optional(),
+                                fieldWithPath("room.endDate").description("마지막일"),
+                                fieldWithPath("member.colorIdx").description("참여자 색상 index")
                         )
                 ));
     }
@@ -134,6 +134,7 @@ class RoomControllerTest {
                 .capacity(10)
                 .startDate("2022.06.20")
                 .endDate("2022.06.30")
+                .colorIdx(2)
                 .build();
     }
 
