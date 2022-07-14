@@ -1,5 +1,6 @@
 package com.firefighter.aenitto.rooms.service;
 
+import com.firefighter.aenitto.common.exception.room.*;
 import com.firefighter.aenitto.members.domain.Member;
 import com.firefighter.aenitto.members.repository.MemberRepositoryImpl;
 import com.firefighter.aenitto.rooms.domain.MemberRoom;
@@ -90,7 +91,7 @@ public class RoomServiceTest {
         final VerifyInvitationRequest request = verifyInviationRequest();
 
         // when, then
-        assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(InvitationNotFoundException.class)
                 .isThrownBy(() -> {
                     target.verifyInvitation(member, request);
                 });
@@ -110,7 +111,7 @@ public class RoomServiceTest {
         final VerifyInvitationRequest verifyInvitationRequest = verifyInviationRequest();
 
         // when, then
-        assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(RoomAlreadyParticipatingException.class)
                 .isThrownBy(() -> {
                     target.verifyInvitation(member, verifyInvitationRequest);
                 });
@@ -151,7 +152,7 @@ public class RoomServiceTest {
         final ParticipateRoomRequest request = participateRoomRequest();
 
         // when, then
-        assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(RoomAlreadyParticipatingException.class)
                 .isThrownBy(() -> {
                     target.participateRoom(member, room.getId(), request);
                 });
@@ -171,7 +172,7 @@ public class RoomServiceTest {
         final ParticipateRoomRequest request = participateRoomRequest();
 
         // when, then
-        assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(RoomNotFoundException.class)
                 .isThrownBy(() -> {
                     target.participateRoom(member, room.getId(), request);
                 });
@@ -192,11 +193,10 @@ public class RoomServiceTest {
         final ParticipateRoomRequest request = participateRoomRequest();
 
         // when, then
-        assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(RoomCapacityExceededException.class)
                 .isThrownBy(() -> {
                     target.participateRoom(member, room.getId(), request);
-                })
-                .withMessage("수용인원 초과");
+                });
         verify(roomRepository, times(1)).findMemberRoomById(any(UUID.class), anyLong());
         verify(roomRepository, times(1)).findRoomById(anyLong());
     }
