@@ -31,15 +31,15 @@ spring:
 #     generate-ddl: true
 #     show-sql: true
 
-# ---
-# ### Develop Profile
-# spring:
-#   jpa:
-#     properties:
-#       hibernate:
-#         dialect: org.hibernate.dialect.PostgreSQLDialect
-#         format_sql: 'true'
-#     show-sql: 'true'
+---
+ ### Develop Profile
+ spring:
+   jpa:
+     properties:
+       hibernate:
+         dialect: org.hibernate.dialect.PostgreSQLDialect
+         format_sql: 'true'
+     show-sql: 'true'
 
-#   session:
-#     store-type: jdbc
+   session:
+     store-type: jdbc
