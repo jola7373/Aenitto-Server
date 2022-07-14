@@ -1,5 +1,6 @@
 package com.firefighter.aenitto.rooms.service;
 
+import com.firefighter.aenitto.common.exception.room.*;
 import com.firefighter.aenitto.members.domain.Member;
 import com.firefighter.aenitto.members.repository.MemberRepository;
 import com.firefighter.aenitto.rooms.domain.MemberRoom;
@@ -65,14 +66,14 @@ public class RoomServiceImpl implements RoomService {
         try {
             findRoom = roomRepository.findByInvitation(invitation);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("초대코드 없음");
+            throw new InvitationNotFoundException();
         }
 
         // TODO (Leo) 07.09 이미 참여 중인 방 logic refactor
         // roomId와 memberId로 MemberRoom 조회 -> 결과가 있을 경우 throw
         try {
             roomRepository.findMemberRoomById(member.getId(), findRoom.getId());
-            throw new IllegalArgumentException("이미 참여 중인 방");
+            throw new RoomAlreadyParticipatingException();
         } catch (EmptyResultDataAccessException e) {
             return VerifyInvitationResponse.from(findRoom);
         }
@@ -84,7 +85,7 @@ public class RoomServiceImpl implements RoomService {
         // roomId와 memberId로 MemberRoom 조회 -> 결과가 있을 경우 throw
         try {
             roomRepository.findMemberRoomById(member.getId(), roomId);
-            throw new IllegalArgumentException("이미 참여 중인 방");
+            throw new RoomAlreadyParticipatingException();
         } catch (EmptyResultDataAccessException e) {}
 
         // roomId로 방 조회 -> 없을 경우 throw
@@ -92,11 +93,11 @@ public class RoomServiceImpl implements RoomService {
         try {
             findRoom = roomRepository.findRoomById(roomId);
         } catch (EmptyResultDataAccessException e) {
-            throw new IllegalArgumentException("방이 존재하지 않음");
+            throw new RoomNotFoundException();
         }
 
         // 방의 수용인원이 초과했을 경우 -> throw
-        if (findRoom.unAcceptable()) throw new IllegalArgumentException("수용인원 초과");
+        if (findRoom.unAcceptable()) throw new RoomCapacityExceededException();
 
         MemberRoom memberRoom = request.toEntity();
         memberRoom.setMemberRoom(member, findRoom);
