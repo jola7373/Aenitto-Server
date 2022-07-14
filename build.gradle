@@ -42,6 +42,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	compileOnly 'org.projectlombok:lombok'
 	implementation 'org.postgresql:postgresql:42.1.4'
+	implementation 'javax.xml.bind:jaxb-api:2.3.1'
 	compile group: 'org.hibernate', name: 'hibernate-core', version: '5.3.7.Final'
 
 	runtimeOnly 'com.h2database:h2'
@@ -49,7 +50,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 	testImplementation 'org.assertj:assertj-core:3.22.0'
-    	testImplementation 'com.h2database:h2'
+	testImplementation 'com.h2database:h2'
 
 }
 
