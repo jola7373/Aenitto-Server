@@ -8,6 +8,7 @@ import com.firefighter.aenitto.rooms.domain.Room;
 import com.firefighter.aenitto.rooms.dto.request.CreateRoomRequest;
 import com.firefighter.aenitto.rooms.dto.request.ParticipateRoomRequest;
 import com.firefighter.aenitto.rooms.dto.request.VerifyInvitationRequest;
+import com.firefighter.aenitto.rooms.dto.response.GetRoomStateResponse;
 import com.firefighter.aenitto.rooms.dto.response.VerifyInvitationResponse;
 import com.firefighter.aenitto.rooms.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -98,6 +99,19 @@ public class RoomServiceImpl implements RoomService {
         memberRepository.updateMember(member);
 
         return roomId;
+    }
+
+    @Override
+    public GetRoomStateResponse getRoomState(Member member, Long roomId) {
+        MemberRoom memberRoom;
+        // 참여 중인 방이 아닐 경우 -> throw
+        try {
+            memberRoom = roomRepository.findMemberRoomById(member.getId(), roomId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new RoomNotParticipatingException();
+        }
+
+        return GetRoomStateResponse.of(memberRoom.getRoom());
     }
 
     private void throwExceptionIfParticipating(UUID memberId, Long roomId) {
