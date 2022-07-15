@@ -9,6 +9,7 @@ import com.firefighter.aenitto.rooms.dto.RoomRequestDtoBuilder;
 import com.firefighter.aenitto.rooms.dto.request.CreateRoomRequest;
 import com.firefighter.aenitto.rooms.dto.request.ParticipateRoomRequest;
 import com.firefighter.aenitto.rooms.dto.request.VerifyInvitationRequest;
+import com.firefighter.aenitto.rooms.dto.response.GetRoomStateResponse;
 import com.firefighter.aenitto.rooms.dto.response.VerifyInvitationResponse;
 import com.firefighter.aenitto.rooms.repository.RoomRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -222,5 +223,31 @@ public class RoomServiceTest {
         assertThat(roomId).isEqualTo(room.getId());
         verify(roomRepository, times(1)).findMemberRoomById(any(UUID.class), anyLong());
         verify(roomRepository, times(1)).findRoomById(anyLong());
+    }
+
+    @DisplayName("방 상태 확인 - 실패 (참여 중인 방 x)")
+    @Test
+    void getRoomstate_fail_not_participating() {
+        when(roomRepository.findMemberRoomById(any(UUID.class), anyLong()))
+                .thenThrow(EmptyResultDataAccessException.class);
+
+        assertThatExceptionOfType(RoomNotParticipatingException.class)
+                .isThrownBy(() -> {
+                    target.getRoomState(member, room.getId());
+                });
+    }
+
+    @DisplayName("방 상태 확인 - 성공")
+    @Test
+    void getRoomState_success() {
+        // given
+        when(roomRepository.findMemberRoomById(any(UUID.class), anyLong()))
+                .thenReturn(memberRoom);
+
+        // when
+        GetRoomStateResponse roomState = target.getRoomState(member, room.getId());
+
+        // then
+        assertThat(roomState.getState()).isEqualTo("PROCESSING");
     }
 }
