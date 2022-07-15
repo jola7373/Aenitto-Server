@@ -52,7 +52,6 @@ public class RoomController {
 
     private Member mockLoginMember() {
         return Member.builder()
-                .id(UUID.randomUUID())
                 .nickname("Mock")
                 .build();
     }

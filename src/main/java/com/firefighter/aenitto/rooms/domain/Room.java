@@ -43,8 +43,7 @@ public class Room extends CreationModificationLog {
     private LocalDate endDate;
 
     @Builder
-    public Room(Long id, String title, int capacity, String invitation, LocalDate startDate, LocalDate endDate) {
-        this.id = id;
+    public Room(String title, int capacity, String invitation, LocalDate startDate, LocalDate endDate) {
         this.title = title;
         this.capacity = capacity;
         this.invitation = invitation;
