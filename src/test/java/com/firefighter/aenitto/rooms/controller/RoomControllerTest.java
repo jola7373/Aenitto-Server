@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.firefighter.aenitto.members.domain.Member;
 import com.firefighter.aenitto.rooms.domain.Room;
+import com.firefighter.aenitto.rooms.dto.RoomRequestDtoBuilder;
+import com.firefighter.aenitto.rooms.dto.RoomResponseDtoBuilder;
 import com.firefighter.aenitto.rooms.dto.request.CreateRoomRequest;
 import com.firefighter.aenitto.rooms.dto.request.ParticipateRoomRequest;
 import com.firefighter.aenitto.rooms.dto.request.VerifyInvitationRequest;
@@ -34,12 +36,10 @@ import static com.firefighter.aenitto.rooms.RoomFixture.ROOM_1;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-
 
 
 @ExtendWith({RestDocumentationExtension.class, MockitoExtension.class})
@@ -82,7 +82,7 @@ class RoomControllerTest {
         // when
         final ResultActions perform = mockMvc.perform(
                 MockMvcRequestBuilders.post(uri)
-                        .content(objectMapper.writeValueAsString(roomRequest()))
+                        .content(objectMapper.writeValueAsString(RoomRequestDtoBuilder.createRoomRequest()))
                         .contentType(MediaType.APPLICATION_JSON)
         );
 
@@ -142,7 +142,7 @@ class RoomControllerTest {
     void verifyInvitation_success() throws Exception {
         // given
         final String url = "/api/v1/invitations/verification";
-        final VerifyInvitationResponse response =verifyInvitationResponse();
+        final VerifyInvitationResponse response = RoomResponseDtoBuilder.verifyInvitationResponse();
         when(roomService.verifyInvitation(any(Member.class), any(VerifyInvitationRequest.class)))
                 .thenReturn(response);
 
@@ -159,10 +159,19 @@ class RoomControllerTest {
         // then
         perform
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.capacity", is(response.getCapacity())))
-                .andExpect(jsonPath("$.title", is(response.getTitle())))
+                .andExpect(jsonPath("$.capacity", is(room.getCapacity())))
+                .andExpect(jsonPath("$.title", is(room.getTitle())))
+                .andExpect(jsonPath("$.participatingCount", is(0)))
                 .andDo(document("초대코드 검증", requestFields(
                         fieldWithPath("invitationCode").description("초대코드")
+                )))
+                .andDo(document("초대코드 검증", responseFields(
+                        fieldWithPath("id").description("멤버 id"),
+                        fieldWithPath("title").description("방 제목"),
+                        fieldWithPath("capacity").description("수용 가능 인원"),
+                        fieldWithPath("participatingCount").description("현재 참여 인원"),
+                        fieldWithPath("startDate").description("시작 일자"),
+                        fieldWithPath("endDate").description("종료 일자")
                 )));
     }
 
@@ -211,26 +220,4 @@ class RoomControllerTest {
                         fieldWithPath("colorIdx").description("참여 색상")
                 )));
     }
-
-    private CreateRoomRequest roomRequest() {
-        return CreateRoomRequest.builder()
-                .title("title")
-                .capacity(10)
-                .startDate("2022.06.20")
-                .endDate("2022.06.30")
-                .colorIdx(2)
-                .build();
-    }
-
-    private VerifyInvitationResponse verifyInvitationResponse() {
-        return VerifyInvitationResponse.builder()
-                .id(1L)
-                .title("제목")
-                .capacity(10)
-                .startDate("2022.06.20")
-                .endDate("2022.06.30")
-                .build();
-
-    }
-
 }
