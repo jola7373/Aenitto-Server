@@ -16,6 +16,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @Qualifier(value = "roomServiceImpl")
 @Transactional(readOnly = true)
@@ -69,24 +71,16 @@ public class RoomServiceImpl implements RoomService {
             throw new InvitationNotFoundException();
         }
 
-        // TODO (Leo) 07.09 이미 참여 중인 방 logic refactor
         // roomId와 memberId로 MemberRoom 조회 -> 결과가 있을 경우 throw
-        try {
-            roomRepository.findMemberRoomById(member.getId(), findRoom.getId());
-            throw new RoomAlreadyParticipatingException();
-        } catch (EmptyResultDataAccessException e) {
-            return VerifyInvitationResponse.from(findRoom);
-        }
+        throwExceptionIfParticipating(member.getId(), findRoom.getId());
 
+        return VerifyInvitationResponse.from(findRoom);
     }
 
     @Override
     public Long participateRoom(Member member, Long roomId, ParticipateRoomRequest request) {
         // roomId와 memberId로 MemberRoom 조회 -> 결과가 있을 경우 throw
-        try {
-            roomRepository.findMemberRoomById(member.getId(), roomId);
-            throw new RoomAlreadyParticipatingException();
-        } catch (EmptyResultDataAccessException e) {}
+        throwExceptionIfParticipating(member.getId(), roomId);
 
         // roomId로 방 조회 -> 없을 경우 throw
         Room findRoom;
@@ -104,5 +98,12 @@ public class RoomServiceImpl implements RoomService {
         memberRepository.updateMember(member);
 
         return roomId;
+    }
+
+    private void throwExceptionIfParticipating(UUID memberId, Long roomId) {
+        try {
+            roomRepository.findMemberRoomById(memberId, roomId);
+            throw new RoomAlreadyParticipatingException();
+        } catch (EmptyResultDataAccessException e) {}
     }
 }
