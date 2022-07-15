@@ -5,6 +5,9 @@ import com.firefighter.aenitto.members.repository.MemberRepository;
 import com.firefighter.aenitto.rooms.domain.MemberRoom;
 import com.firefighter.aenitto.rooms.domain.Room;
 import com.firefighter.aenitto.rooms.dto.request.CreateRoomRequest;
+import com.firefighter.aenitto.rooms.dto.request.ParticipateRoomRequest;
+import com.firefighter.aenitto.rooms.dto.request.VerifyInvitationRequest;
+import com.firefighter.aenitto.rooms.dto.response.VerifyInvitationResponse;
 import com.firefighter.aenitto.rooms.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -52,4 +55,53 @@ public class RoomServiceImpl implements RoomService {
         return roomRepository.saveRoom(room).getId();
     }
 
+
+    @Override
+    public VerifyInvitationResponse verifyInvitation(Member member, VerifyInvitationRequest verifyInvitationRequest) {
+        final String invitation = verifyInvitationRequest.getInvitationCode();
+        Room findRoom;
+
+        // 초대코드로 Room 조회 -> 결과가 없을 경우 throw
+        try {
+            findRoom = roomRepository.findByInvitation(invitation);
+        } catch (EmptyResultDataAccessException e) {
+            throw new IllegalArgumentException("초대코드 없음");
+        }
+
+        // TODO (Leo) 07.09 이미 참여 중인 방 logic refactor
+        // roomId와 memberId로 MemberRoom 조회 -> 결과가 있을 경우 throw
+        try {
+            roomRepository.findMemberRoomById(member.getId(), findRoom.getId());
+            throw new IllegalArgumentException("이미 참여 중인 방");
+        } catch (EmptyResultDataAccessException e) {
+            return VerifyInvitationResponse.from(findRoom);
+        }
+
+    }
+
+    @Override
+    public Long participateRoom(Member member, Long roomId, ParticipateRoomRequest request) {
+        // roomId와 memberId로 MemberRoom 조회 -> 결과가 있을 경우 throw
+        try {
+            roomRepository.findMemberRoomById(member.getId(), roomId);
+            throw new IllegalArgumentException("이미 참여 중인 방");
+        } catch (EmptyResultDataAccessException e) {}
+
+        // roomId로 방 조회 -> 없을 경우 throw
+        Room findRoom;
+        try {
+            findRoom = roomRepository.findRoomById(roomId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new IllegalArgumentException("방이 존재하지 않음");
+        }
+
+        // 방의 수용인원이 초과했을 경우 -> throw
+        if (findRoom.unAcceptable()) throw new IllegalArgumentException("수용인원 초과");
+
+        MemberRoom memberRoom = request.toEntity();
+        memberRoom.setMemberRoom(member, findRoom);
+        memberRepository.updateMember(member);
+
+        return roomId;
+    }
 }
