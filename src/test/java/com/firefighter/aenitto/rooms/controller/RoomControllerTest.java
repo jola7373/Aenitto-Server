@@ -161,7 +161,7 @@ class RoomControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.capacity", is(room.getCapacity())))
                 .andExpect(jsonPath("$.title", is(room.getTitle())))
-                .andExpect(jsonPath("$.participatingCount", is(0)))
+                .andExpect(jsonPath("$.participatingCount", is(1)))
                 .andDo(document("초대코드 검증", requestFields(
                         fieldWithPath("invitationCode").description("초대코드")
                 )))
