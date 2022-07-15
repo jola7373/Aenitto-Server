@@ -39,22 +39,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: 'true'
-        ddl-auto: create
-        show-sql: true
-        database: postgresql
-        database-platform: org.hibernate.dialect.PostgreSQLDialect
-        generate-ddl: true
-
-        naming:
-          physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
-
     show-sql: 'true'
 
   session:
     store-type: jdbc
-
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://aenitto.clldsrluk4r4.ap-northeast-2.rds.amazonaws.com:5432/postgres
-    username: postgres
-    password: aenitto77
