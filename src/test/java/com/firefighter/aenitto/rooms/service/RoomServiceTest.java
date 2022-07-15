@@ -23,9 +23,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.UUID;
 
-import static com.firefighter.aenitto.members.MemberFixture.MEMBER_1;
-import static com.firefighter.aenitto.rooms.RoomFixture.MEMBER_ROOM_1;
-import static com.firefighter.aenitto.rooms.RoomFixture.ROOM_1;
+import static com.firefighter.aenitto.members.MemberFixture.*;
+import static com.firefighter.aenitto.rooms.RoomFixture.*;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -48,9 +47,9 @@ public class RoomServiceTest {
 
     @BeforeEach
     void setup() {
-        room = ROOM_1;
-        member = MEMBER_1;
-        memberRoom = MEMBER_ROOM_1;
+        room = roomFixture();
+        member = memberFixture();
+        memberRoom = memberRoomFixture(member, room);
     }
 
     @DisplayName("방 생성 성공")

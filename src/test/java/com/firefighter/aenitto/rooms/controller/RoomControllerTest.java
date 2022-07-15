@@ -3,6 +3,7 @@ package com.firefighter.aenitto.rooms.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.firefighter.aenitto.members.domain.Member;
+import com.firefighter.aenitto.rooms.domain.MemberRoom;
 import com.firefighter.aenitto.rooms.domain.Room;
 import com.firefighter.aenitto.rooms.dto.RoomRequestDtoBuilder;
 import com.firefighter.aenitto.rooms.dto.RoomResponseDtoBuilder;
@@ -31,8 +32,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static com.firefighter.aenitto.members.MemberFixture.MEMBER_1;
-import static com.firefighter.aenitto.rooms.RoomFixture.ROOM_1;
+import static com.firefighter.aenitto.members.MemberFixture.memberFixture;
+import static com.firefighter.aenitto.rooms.RoomFixture.*;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 
@@ -59,6 +60,7 @@ class RoomControllerTest {
     // Fixture
     private Member member;
     private Room room;
+    private MemberRoom memberRoom;
 
     @BeforeEach
     void init(RestDocumentationContextProvider restDocumentation) {
@@ -66,8 +68,9 @@ class RoomControllerTest {
                 .apply(documentationConfiguration(restDocumentation))
                 .build();
         objectMapper = new ObjectMapper();
-        room = ROOM_1;
-        member = MEMBER_1;
+        room = roomFixture();
+        member = memberFixture();
+        memberRoom = memberRoomFixture(member, room);
     }
 
     @DisplayName("방 생성 -> 성공")
@@ -142,7 +145,7 @@ class RoomControllerTest {
     void verifyInvitation_success() throws Exception {
         // given
         final String url = "/api/v1/invitations/verification";
-        final VerifyInvitationResponse response = RoomResponseDtoBuilder.verifyInvitationResponse();
+        final VerifyInvitationResponse response = RoomResponseDtoBuilder.verifyInvitationResponse(room);
         when(roomService.verifyInvitation(any(Member.class), any(VerifyInvitationRequest.class)))
                 .thenReturn(response);
 
