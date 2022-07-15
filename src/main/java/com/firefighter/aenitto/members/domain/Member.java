@@ -20,8 +20,8 @@ import java.util.UUID;
 public class Member extends CreationModificationLog {
 
     @Id @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Type(type = "pg-uuid")
+//    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+//    @Type(type = "pg-uuid")
     @Column(name = "member_id", columnDefinition = "uuid")
     private UUID id;
 
