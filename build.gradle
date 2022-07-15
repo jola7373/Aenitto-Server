@@ -41,17 +41,14 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.postgresql:postgresql:42.1.4'
-<<<<<<< HEAD
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-//	implementation 'io.jsonwebtoken:jjwt:0.9.0'
+
 
 	compile('io.jsonwebtoken:jjwt-api:0.11.1')
 	runtime('io.jsonwebtoken:jjwt-impl:0.11.1', 'io.jsonwebtoken:jjwt-jackson:0.11.1')
 
 	compileOnly 'org.projectlombok:lombok'
 	compile group: 'org.hibernate', name: 'hibernate-core', version: '5.3.7.Final'
-=======
->>>>>>> develop
 
 	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -61,10 +58,8 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 	testImplementation 'org.assertj:assertj-core:3.22.0'
-<<<<<<< HEAD
 	testImplementation 'org.springframework.security:spring-security-test'
-=======
->>>>>>> develop
+
 	testImplementation 'com.h2database:h2'
 
 }

@@ -8,7 +8,10 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum AuthErrorCode implements ErrorCode {
+
+    DUPLICATED_AUTH_REGISTER(HttpStatus.BAD_REQUEST, "Duplicated Auth Register Request"),
     ;
+
     private final HttpStatus status;
     private final String message;
 }

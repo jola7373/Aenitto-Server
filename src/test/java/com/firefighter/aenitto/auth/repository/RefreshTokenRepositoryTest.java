@@ -27,7 +27,7 @@ public class RefreshTokenRepositoryTest {
     EntityManager em;
 
     @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
+    private RefreshTokenRepositoryImpl refreshTokenRepository;
 
     private RefreshToken refreshToken;
 
