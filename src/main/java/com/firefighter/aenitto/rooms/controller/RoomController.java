@@ -4,6 +4,7 @@ import com.firefighter.aenitto.members.domain.Member;
 import com.firefighter.aenitto.rooms.dto.request.CreateRoomRequest;
 import com.firefighter.aenitto.rooms.dto.request.ParticipateRoomRequest;
 import com.firefighter.aenitto.rooms.dto.request.VerifyInvitationRequest;
+import com.firefighter.aenitto.rooms.dto.response.GetRoomStateResponse;
 import com.firefighter.aenitto.rooms.dto.response.VerifyInvitationResponse;
 import com.firefighter.aenitto.rooms.service.RoomService;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,14 @@ public class RoomController {
         final Member member = mockLoginMember();
         roomService.participateRoom(member, roomId, request);
         return ResponseEntity.created(URI.create("/api/v1/rooms/" + roomId)).build();
+    }
+
+    @GetMapping("/rooms/{roomId}/state")
+    public ResponseEntity<GetRoomStateResponse> getRoomState(
+            @PathVariable final Long roomId
+    ) {
+        final Member member = mockLoginMember();
+        return ResponseEntity.ok(roomService.getRoomState(member, roomId));
     }
 
     private Member mockLoginMember() {
