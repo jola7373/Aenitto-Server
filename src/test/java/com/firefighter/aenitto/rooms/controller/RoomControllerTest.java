@@ -2,6 +2,9 @@ package com.firefighter.aenitto.rooms.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.firefighter.aenitto.common.exception.GlobalExceptionHandler;
+import com.firefighter.aenitto.common.exception.room.RoomErrorCode;
+import com.firefighter.aenitto.common.exception.room.RoomNotParticipatingException;
 import com.firefighter.aenitto.members.domain.Member;
 import com.firefighter.aenitto.rooms.domain.MemberRoom;
 import com.firefighter.aenitto.rooms.domain.Room;
@@ -24,6 +27,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
@@ -38,13 +42,13 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 
 
 @ExtendWith({RestDocumentationExtension.class, MockitoExtension.class})
-@AutoConfigureMockMvc
 @AutoConfigureRestDocs
 class RoomControllerTest {
     @InjectMocks
@@ -65,6 +69,7 @@ class RoomControllerTest {
     @BeforeEach
     void init(RestDocumentationContextProvider restDocumentation) {
         mockMvc = MockMvcBuilders.standaloneSetup(roomController)
+                .setControllerAdvice(GlobalExceptionHandler.class)
                 .apply(documentationConfiguration(restDocumentation))
                 .build();
         objectMapper = new ObjectMapper();
@@ -222,5 +227,52 @@ class RoomControllerTest {
                 .andDo(document("방 참여", requestFields(
                         fieldWithPath("colorIdx").description("참여 색상")
                 )));
+    }
+
+    @DisplayName("방 상태 조회 - 실패 (참여 x)")
+    @Test
+    void getStateRoom_fail_not_participating() throws Exception {
+        final Long roomId = 1L;
+        final String url = "/api/v1/rooms/" + roomId + "/state";
+
+        when(roomService.getRoomState(any(Member.class), anyLong()))
+                .thenThrow(new RoomNotParticipatingException());
+
+        ResultActions perform = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        perform
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(handler().handlerType(RoomController.class))
+                .andExpect(jsonPath("$.status", is(HttpStatus.FORBIDDEN.value())))
+                .andExpect(jsonPath("$.message", is(RoomErrorCode.ROOM_NOT_PARTICIPATING.getMessage())));
+
+        verify(roomService, times(1)).getRoomState(any(Member.class), anyLong());
+    }
+
+    @DisplayName("방 상태 조회 - 성공")
+    @Test
+    void getStateRoom_success() throws Exception {
+        final Long roomId = 1L;
+        final String url = "/api/v1/rooms/" + roomId + "/state";
+        when(roomService.getRoomState(any(Member.class), anyLong()))
+                .thenReturn(RoomResponseDtoBuilder.getRoomStateResponse(room));
+
+        // when
+        ResultActions perform = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        perform
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.state", is(room.getState().toString())))
+                .andDo(document("방 상태 조회", responseFields(
+                        fieldWithPath("state").description("방 상태")
+                )));
+        verify(roomService, times(1)).getRoomState(any(Member.class), anyLong());
     }
 }
