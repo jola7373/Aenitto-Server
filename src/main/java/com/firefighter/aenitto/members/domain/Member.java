@@ -21,19 +21,22 @@ public class Member extends CreationModificationLog {
 
     @Id @GeneratedValue(generator = "uuid2")
 //    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Type(type = "pg-uuid")
+//    @Type(type = "pg-uuid")
     @Column(name = "member_id", columnDefinition = "uuid")
     private UUID id;
 
     private String nickname;
 
+    private String socialId;
+
     @OneToMany(mappedBy = "member")
     private List<MemberRoom> memberRooms = new ArrayList<>();
 
     @Builder
-    public Member(UUID id, String nickname) {
+    public Member(UUID id, String nickname, String socialId) {
         this.id = id;
         this.nickname = nickname;
+        this.socialId = socialId;
     }
 
     public void changeNickname(String nickname) {

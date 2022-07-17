@@ -1,0 +1,46 @@
+spring:
+  profiles:
+    active: postgres-test
+
+---
+# H2 IN MEMORY TEST
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test
+    username: sa
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+    generate-ddl: true
+    show-sql: true
+---
+# POSTGRES LOCAL TEST
+spring:
+  config:
+    activate:
+      on-profile: postgres-test
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: Jihye7373!
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+      show-sql: true
+      database: postgresql
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
+      generate-ddl: true
+
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl

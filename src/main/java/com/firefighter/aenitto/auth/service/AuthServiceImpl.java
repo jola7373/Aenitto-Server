@@ -3,7 +3,6 @@ package com.firefighter.aenitto.auth.service;
 
 import com.firefighter.aenitto.auth.domain.RefreshToken;
 import com.firefighter.aenitto.auth.repository.RefreshTokenRepository;
-import com.firefighter.aenitto.common.exception.auth.AuthErrorCode;
 import com.firefighter.aenitto.common.exception.auth.RefreshTokenExistException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class RefreshTokenServiceImpl implements RefreshTokenService {
+public class AuthServiceImpl implements AuthService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     @Override

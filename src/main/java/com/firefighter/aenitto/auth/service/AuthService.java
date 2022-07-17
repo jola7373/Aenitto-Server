@@ -6,6 +6,6 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-public interface RefreshTokenService {
+public interface AuthService {
     RefreshToken saveRefreshToken(UUID memberId);
 }

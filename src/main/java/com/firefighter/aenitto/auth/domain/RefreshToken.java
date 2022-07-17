@@ -21,7 +21,7 @@ public class RefreshToken {
     /*
     실제 mapping x
      */
-    @Type(type="pg-uuid")
+//    @Type(type="pg-uuid")
     @Column(columnDefinition = "uuid")
     private UUID memberId;
 

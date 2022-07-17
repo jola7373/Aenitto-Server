@@ -9,5 +9,7 @@ public interface MemberRepository {
 
     public Member updateMember(Member member);
 
-    public void saveMember(Member member);
+    public Member saveMember(Member member);
+
+    public Member findBySocialId(String socialId);
 }
