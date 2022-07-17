@@ -1,7 +1,9 @@
 package com.firefighter.aenitto.auth.service;
 
 import com.firefighter.aenitto.auth.domain.RefreshToken;
+import com.firefighter.aenitto.auth.dto.response.TempLoginResponse;
 import com.firefighter.aenitto.auth.repository.RefreshTokenRepository;
+import com.firefighter.aenitto.auth.token.Token;
 import com.firefighter.aenitto.common.exception.auth.RefreshTokenExistException;
 import com.firefighter.aenitto.members.domain.Member;
 import com.firefighter.aenitto.members.repository.MemberRepository;
@@ -27,6 +29,7 @@ import static org.mockito.Mockito.verify;
 public class AuthServiceImplTest {
 
     private final UUID memberId = UUID.fromString("b48617b2-090d-4ee6-9033-b99f99d98304");
+    private final String socialId = "socialId입니다";
 
     @Mock
     private RefreshTokenRepository refreshTokenRepository;
@@ -37,7 +40,13 @@ public class AuthServiceImplTest {
     @InjectMocks
     private AuthServiceImpl target;
 
+    @Mock
+    private TokenService tokenService;
+
     private RefreshToken refreshToken;
+
+    @Mock
+    private Token token;
 
     @BeforeEach
     void setup() {
@@ -45,28 +54,45 @@ public class AuthServiceImplTest {
                 .memberId(UUID.fromString("b48617b2-090d-4ee6-9033-b99f99d98304"))
                 .refreshToken("refreshToken입니다123123")
                 .build();
+
     }
 
-//    @Test
-//    @DisplayName("임시 login 성공 - 회원가입 되지 않은 유저")
-//    public void temp_login_success_notExistUser() {
-//        // given
-//        doReturn(null).when(memberRepository).findBySocialId(socialId);
-//        doReturn(Member.builder().build()).when(memberRepository).saveMember(any(Member.class));
-//        doReturn(RefreshToken.builder().build()).when(refreshTokenRepository).saveRefreshToken(any(RefreshToken.class));
-//
-//        // when
-//        final Member resultMember = target.saveMember(socialId);
-//        final RefreshToken resultRefreshToken = target.saveRefreshToken(memberId);
-//
-//        //then
-//        assertThat(resultRefreshToken.getMemberId()).isNotNull();
-//        assertThat(resultMember.getId()).isNotNull();
-//
-//        // then
-//       assertAll(
-//               () -> verify(memberRepository).saveMember(any(Member.class)),
-//               () -> verify(refreshTokenRepository).saveRefreshToken(any(RefreshToken.class))
-//       );
-//    }
+    @Test
+    @DisplayName("임시 login 성공 - 회원가입")
+    public void temp_login() {
+
+        // given
+        doReturn(member()).when(memberRepository).saveMember(any(Member.class));
+        doReturn(token()).when(tokenService).generateToken("socialId입니다", "USER");
+        doReturn(refreshToken()).when(refreshTokenRepository).saveRefreshToken(any(RefreshToken.class));
+
+        // when
+        final TempLoginResponse result = target.loginOrSignIn(socialId);
+
+        //then
+        assertThat(result.getAccessToken()).isNotNull();
+
+        // then
+       assertAll(
+               () -> verify(memberRepository).saveMember(any(Member.class))
+       );
+    }
+    private Member member() {
+        return Member.builder()
+                .id(UUID.fromString("b48617b2-090d-4ee6-9033-b99f99d98304"))
+                .socialId("socialId입니다")
+                .build();
+    }
+
+    private Token token() {
+        return Token.builder().accessToken("accessToken").refreshToken("refreshToken").build();
+    }
+
+
+    private RefreshToken refreshToken() {
+        return RefreshToken.builder()
+                .memberId(UUID.fromString("b48617b2-090d-4ee6-9033-b99f99d98304"))
+                .refreshToken("refreshToken입니다123123")
+                .build();
+    }
 }
