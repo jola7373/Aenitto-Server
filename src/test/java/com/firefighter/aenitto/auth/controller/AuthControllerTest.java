@@ -28,7 +28,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -79,9 +82,18 @@ public class AuthControllerTest {
         // then
         perform
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken", is(tempLoginResponse.getAccessToken())));
-
-
+                .andExpect(jsonPath("$.accessToken", is(tempLoginResponse.getAccessToken())))
+                .andDo(document("temp-login",
+                        preprocessRequest(prettyPrint()),   // (2)
+                        preprocessResponse(prettyPrint()),
+                        requestFields(
+                                fieldWithPath("accessToken").description("토큰")
+                        ),
+                        responseFields(
+                                fieldWithPath("accessToken").description("발급된 토큰")
+                        )
+                )
+        );
     }
 
 }
