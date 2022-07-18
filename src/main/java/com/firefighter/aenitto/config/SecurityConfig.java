@@ -26,6 +26,7 @@ public class SecurityConfig{
                 .authorizeRequests()
                 .antMatchers(
                         "/api/v1/auth/**"
+                        ,"/api/v1/temp-login"
                         ).permitAll()
                 .anyRequest().authenticated()
                 .and()

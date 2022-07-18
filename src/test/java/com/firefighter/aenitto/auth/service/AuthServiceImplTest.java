@@ -1,6 +1,7 @@
 package com.firefighter.aenitto.auth.service;
 
 import com.firefighter.aenitto.auth.domain.RefreshToken;
+import com.firefighter.aenitto.auth.dto.request.TempLoginRequest;
 import com.firefighter.aenitto.auth.dto.response.TempLoginResponse;
 import com.firefighter.aenitto.auth.repository.RefreshTokenRepository;
 import com.firefighter.aenitto.auth.token.Token;
@@ -8,6 +9,7 @@ import com.firefighter.aenitto.common.exception.auth.RefreshTokenExistException;
 import com.firefighter.aenitto.members.domain.Member;
 import com.firefighter.aenitto.members.repository.MemberRepository;
 import com.firefighter.aenitto.members.repository.MemberRepositoryImpl;
+import com.firefighter.aenitto.rooms.dto.request.CreateRoomRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,9 +67,12 @@ public class AuthServiceImplTest {
         doReturn(member()).when(memberRepository).saveMember(any(Member.class));
         doReturn(token()).when(tokenService).generateToken("socialId입니다", "USER");
         doReturn(refreshToken()).when(refreshTokenRepository).saveRefreshToken(any(RefreshToken.class));
+        TempLoginRequest tempLoginRequest = TempLoginRequest.builder()
+                .accessToken("accessToken")
+                .build();
 
         // when
-        final TempLoginResponse result = target.loginOrSignIn(socialId);
+        final TempLoginResponse result = target.loginOrSignIn(tempLoginRequest);
 
         //then
         assertThat(result.getAccessToken()).isNotNull();
