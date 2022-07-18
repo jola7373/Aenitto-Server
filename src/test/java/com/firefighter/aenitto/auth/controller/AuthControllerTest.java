@@ -56,30 +56,6 @@ public class AuthControllerTest {
         objectMapper = new ObjectMapper();
     }
 
-    /*
-    // given
-        final String url = "/api/v1/invitations/verification";
-        final VerifyInvitationResponse response =verifyInvitationResponse();
-        when(roomService.verifyInvitation(any(Member.class), any(VerifyInvitationRequest.class)))
-                .thenReturn(response);
-
-        // when
-        ResultActions perform = mockMvc.perform(
-                MockMvcRequestBuilders.post(url)
-                        .content(objectMapper.writeValueAsString(
-                                VerifyInvitationRequest.builder()
-                                        .invitationCode("A1B2C3")
-                                        .build())
-                        ).contentType(MediaType.APPLICATION_JSON)
-        );
-
-        // then
-        perform
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.capacity", is(response.getCapacity())))
-                .andExpect(jsonPath("$.title", is(response.getTitle())));
-    }
-     */
     @Test
     @DisplayName("임시 사용자 생성 성공")
     public void 임시사용자생성_성공() throws Exception{
