@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -17,18 +18,25 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends CreationModificationLog {
+
     @Id @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(name = "member_id", columnDefinition = "BINARY(225)")
+//    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+//    @Type(type = "pg-uuid")
+    @Column(name = "member_id", columnDefinition = "uuid")
     private UUID id;
 
     private String nickname;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member")
     private List<MemberRoom> memberRooms = new ArrayList<>();
 
     @Builder
-    public Member(String nickname) {
+    public Member(UUID id, String nickname) {
+        this.id = id;
+        this.nickname = nickname;
+    }
+
+    public void changeNickname(String nickname) {
         this.nickname = nickname;
     }
 }

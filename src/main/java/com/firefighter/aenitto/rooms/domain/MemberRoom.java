@@ -44,7 +44,8 @@ public class MemberRoom extends CreationModificationLog {
     private ParticipantRole role;
 
     @Builder
-    public MemberRoom(boolean admin, int colorIdx) {
+    public MemberRoom(Long id, boolean admin, int colorIdx) {
+        this.id = id;
         this.admin = admin;
         this.colorIdx = colorIdx;
     }

@@ -11,12 +11,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
@@ -29,6 +31,8 @@ class RoomRepositoryImplTest {
     @Autowired RoomRepositoryImpl roomRepository;
 
     Room room;
+    Member member;
+    MemberRoom memberRoom;
 
     @BeforeEach
     void setRoom() {
@@ -39,6 +43,44 @@ class RoomRepositoryImplTest {
                 .startDate(LocalDate.of(2022, 6, 27))
                 .endDate(LocalDate.of(2022, 6, 30))
                 .build();
+
+        this.member = Member.builder()
+                .nickname("Leo")
+                .build();
+
+        this.memberRoom = MemberRoom.builder()
+                .admin(false)
+                .colorIdx(1)
+                .build();
+    }
+
+    @DisplayName("Room 정보 수정 테스트")
+    @Test
+    void mergeRoomTest() {
+        // given
+        roomRepository.saveRoom(room);
+        em.flush();
+        em.clear();
+
+        // room은 detached 상태
+        MemberRoom memberRoom = MemberRoom.builder().build();
+        Member member = Member.builder().build();
+        memberRoom.setMemberRoom(member, room);
+
+        assertThatExceptionOfType(InvalidDataAccessApiUsageException.class)
+                .isThrownBy(() -> {
+                    roomRepository.saveRoom(room);
+                });
+
+        Room merge = roomRepository.mergeRoom(room);
+
+        Room roomById = roomRepository.findRoomById(merge.getId());
+
+        // then
+        assertThat(roomById).isNotNull();
+        assertThat(roomById.getId()).isEqualTo(room.getId());
+        assertThat(roomById.getMemberRooms().size()).isEqualTo(1);
+
     }
 
 
@@ -123,6 +165,69 @@ class RoomRepositoryImplTest {
         assertThat(memberRoom1).isEqualTo(memberRoom);
         assertThat(memberRoom1.getMember()).isEqualTo(member);
         assertThat(memberRoom1.getRoom()).isEqualTo(room);
+    }
+
+    @DisplayName("roomId, memberId로 MemberRoom 검색 - 실패 (memberRoom 없음)")
+    @Test
+    void findMemberRoomById_fail_not_exist() {
+        // given, when, then
+        assertThatExceptionOfType(EmptyResultDataAccessException.class)
+                .isThrownBy(() -> {
+                    roomRepository.findMemberRoomById(UUID.randomUUID(), 1L);
+                });
+    }
+
+    @DisplayName("roomId, memberId로 MemberRoom 검색 - 성공")
+    @Test
+    void findMemberRoomById() {
+        // given
+        memberRoom.setMemberRoom(member, room);
+        em.persist(member);
+        em.persist(room);
+
+        em.flush();
+        em.clear();
+
+        // when
+        MemberRoom memberRoomById = roomRepository.findMemberRoomById(member.getId(), room.getId());
+
+        // then
+        assertThat(memberRoomById).isNotNull();
+        assertThat(memberRoomById.getColorIdx()).isEqualTo(1);
+        assertThat(memberRoomById.isAdmin()).isEqualTo(false);
+    }
+
+    @DisplayName("방 참가 테스트 (Member, Room - detached, MemberRoom - transient")
+    @Test
+    void participateRoom() {
+        // given
+        em.persist(member);
+        em.persist(room);
+
+        em.flush();
+        em.clear();
+
+        MemberRoom memberRoom = MemberRoom.builder().admin(false).colorIdx(1).build();
+
+        // when
+        Room findRoom = em.find(Room.class, room.getId());
+        memberRoom.setMemberRoom(member, findRoom);
+        em.merge(member);
+
+        em.flush();
+        em.clear();
+
+        // then
+        Member member1 = em.find(Member.class, member.getId());
+        MemberRoom memberRoom1 = em.find(MemberRoom.class, memberRoom.getId());
+        Room room1 = em.find(Room.class, room.getId());
+
+        assertNotNull(member1);
+        assertNotNull(room1);
+        assertNotNull(memberRoom1);
+        assertThat(member1.getMemberRooms().size()).isEqualTo(1);
+        assertThat(room1.getMemberRooms().size()).isEqualTo(1);
+
     }
 
 }

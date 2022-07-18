@@ -2,7 +2,12 @@ package com.firefighter.aenitto.rooms.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.firefighter.aenitto.rooms.dto.RoomRequest;
+import com.firefighter.aenitto.members.domain.Member;
+import com.firefighter.aenitto.rooms.domain.Room;
+import com.firefighter.aenitto.rooms.dto.request.CreateRoomRequest;
+import com.firefighter.aenitto.rooms.dto.request.ParticipateRoomRequest;
+import com.firefighter.aenitto.rooms.dto.request.VerifyInvitationRequest;
+import com.firefighter.aenitto.rooms.dto.response.VerifyInvitationResponse;
 import com.firefighter.aenitto.rooms.service.RoomService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,29 +25,27 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.assertj.core.api.Assertions.*;
+import static com.firefighter.aenitto.members.MemberFixture.MEMBER_1;
+import static com.firefighter.aenitto.rooms.RoomFixture.ROOM_1;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 
 @ExtendWith({RestDocumentationExtension.class, MockitoExtension.class})
-//@SpringBootTest
-@AutoConfigureMockMvc // -> webAppContextSetup(webApplicationContext)
+@AutoConfigureMockMvc
 @AutoConfigureRestDocs
 class RoomControllerTest {
     @InjectMocks
@@ -55,7 +58,9 @@ class RoomControllerTest {
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
 
-
+    // Fixture
+    private Member member;
+    private Room room;
 
     @BeforeEach
     void init(RestDocumentationContextProvider restDocumentation) {
@@ -63,13 +68,15 @@ class RoomControllerTest {
                 .apply(documentationConfiguration(restDocumentation))
                 .build();
         objectMapper = new ObjectMapper();
+        room = ROOM_1;
+        member = MEMBER_1;
     }
 
     @DisplayName("방 생성 -> 성공")
     @Test
     void createRoom() throws Exception {
         // Mock
-        when(roomService.createRoom(any(UUID.class), any(RoomRequest.class))).thenReturn(roomRequest().toEntity());
+        when(roomService.createRoom(any(Member.class), any(CreateRoomRequest.class))).thenReturn(1L);
 
         // given
         final String uri = "/api/v1/rooms";
@@ -84,13 +91,13 @@ class RoomControllerTest {
         // then
         perform.andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
-                .andDo(document("room-create", // 5
-                        preprocessRequest(prettyPrint()),
-                        requestFields(
-                                fieldWithPath("title").description("Post 제목"), // 7
-                                fieldWithPath("capacity").description("Post 내용").optional(), // 8
-                                fieldWithPath("startDate").description("시작일").optional(),
-                                fieldWithPath("endDate").description("마지막일")
+                .andDo(document("post-create", // 5
+                        requestFields( // 6
+                                fieldWithPath("room.title").description("Post 제목"), // 7
+                                fieldWithPath("room.capacity").description("Post 내용").optional(), // 8
+                                fieldWithPath("room.startDate").description("시작일").optional(),
+                                fieldWithPath("room.endDate").description("마지막일"),
+                                fieldWithPath("member.colorIdx").description("참여자 색상 index")
                         )
                 ));
     }
@@ -105,11 +112,12 @@ class RoomControllerTest {
         final ResultActions perform = mockMvc.perform(
                 MockMvcRequestBuilders.post(uri)
                         .content(objectMapper.writeValueAsString(
-                                RoomRequest.builder()
-                                        .title("qqqqqqqqq")
+                                CreateRoomRequest.builder()
+                                        .title("qqqqqqqqqqqqqqq")
                                         .capacity(10)
                                         .startDate("2022.06.20")
                                         .endDate("2022.06.30")
+                                        .colorIdx(1)
                                         .build())
                         ).contentType(MediaType.APPLICATION_JSON)
         );
@@ -117,7 +125,7 @@ class RoomControllerTest {
         final ResultActions perform1 = mockMvc.perform(
                 MockMvcRequestBuilders.post(uri)
                         .content(objectMapper.writeValueAsString(
-                                RoomRequest.builder()
+                                CreateRoomRequest.builder()
                                         .title("자자자")
                                         .capacity(16)
                                         .endDate("2022.06.30")
@@ -131,13 +139,94 @@ class RoomControllerTest {
         perform1.andExpect(status().isBadRequest());
     }
 
-    private RoomRequest roomRequest() {
-        return RoomRequest.builder()
+    @DisplayName("초대코드 검증 - 성공")
+    @Test
+    void verifyInvitation_success() throws Exception {
+        // given
+        final String url = "/api/v1/invitations/verification";
+        final VerifyInvitationResponse response =verifyInvitationResponse();
+        when(roomService.verifyInvitation(any(Member.class), any(VerifyInvitationRequest.class)))
+                .thenReturn(response);
+
+        // when
+        ResultActions perform = mockMvc.perform(
+                MockMvcRequestBuilders.post(url)
+                        .content(objectMapper.writeValueAsString(
+                                VerifyInvitationRequest.builder()
+                                        .invitationCode("A1B2C3")
+                                        .build())
+                        ).contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        perform
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.capacity", is(response.getCapacity())))
+                .andExpect(jsonPath("$.title", is(response.getTitle())));
+    }
+
+    @DisplayName("초대코드 검증 - 실패 (초대코드가 6자가 아닌 경우)")
+    @Test
+    void veriyInvitation_fail() throws Exception {
+        // given
+        final String url = "/api/v1/invitations/verification";
+
+        // when
+        ResultActions perform = mockMvc.perform(
+                MockMvcRequestBuilders.post(url)
+                        .content(objectMapper.writeValueAsString(
+                                VerifyInvitationRequest.builder()
+                                        .invitationCode("1231234")
+                                        .build()
+                        )).contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        perform.andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("방 참여 - 성공")
+    @Test
+    void participateRoom_success() throws Exception {
+        // given
+        final Long roomId = 1L;
+        final String url = "/api/v1/rooms/" + roomId + "/participants";
+        final ParticipateRoomRequest request = ParticipateRoomRequest.builder().colorIdx(1).build();
+        when(roomService.participateRoom(any(Member.class), anyLong(), any(ParticipateRoomRequest.class)))
+                .thenReturn(roomId);
+
+        // when
+        ResultActions perform = mockMvc.perform(
+                MockMvcRequestBuilders.post(url)
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        perform
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/api/v1/rooms/1"));
+    }
+
+    private CreateRoomRequest roomRequest() {
+        return CreateRoomRequest.builder()
                 .title("title")
                 .capacity(10)
                 .startDate("2022.06.20")
                 .endDate("2022.06.30")
+                .colorIdx(2)
                 .build();
+    }
+
+    private VerifyInvitationResponse verifyInvitationResponse() {
+        return VerifyInvitationResponse.builder()
+                .id(1L)
+                .title("제목")
+                .capacity(10)
+                .startDate("2022.06.20")
+                .endDate("2022.06.30")
+                .build();
+
     }
 
 }
