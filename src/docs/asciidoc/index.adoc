@@ -6,10 +6,10 @@
 :toclevels: 2
 :sectlinks:
 
-// 예시 템플릿
-//[[Member-API]]
-//== Member API
-//
-//[[Member-단일-조회]]
-//=== Member 단일 조회
-//operation::member-get[snippets='http-request,path-parameters,http-response,response-fields']
+ 예시 템플릿
+[[Member-API]]
+== Member API
+
+[[Member-임시-로그인]]
+=== Member 임시 로그인
+operation::temp-login[snippets='http-request,path-parameters,http-response,response-fields']

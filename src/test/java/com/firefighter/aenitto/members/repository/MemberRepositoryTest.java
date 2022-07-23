@@ -18,6 +18,8 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -36,7 +38,7 @@ class MemberRepositoryTest {
 
     @BeforeEach
     void setExampleMember() {
-        member = memberBuilder("Leo");
+        member = memberBuilder("Leo", "socialId입니다");
     }
 
     @DisplayName("Member 저장 테스트")
@@ -88,9 +90,23 @@ class MemberRepositoryTest {
         assertThat(findMember.getNickname()).isEqualTo("LeoLeo");
     }
 
-    private Member memberBuilder(String nickname) {
+    @DisplayName("Member 소셜 id로 찾기")
+    @Test
+    void 사용자존재테스트(){
+        //when
+        final Member result = memberRepository.saveMember(member);
+        final Member findResult = memberRepository.findBySocialId(member.getSocialId());
+
+        //then
+        assertThat(findResult.getId()).isNotNull();
+        assertThat(findResult.getId()).isEqualTo(member.getId());
+        assertThat(findResult.getSocialId()).isEqualTo("socialId입니다");
+    }
+
+    private Member memberBuilder(String nickname, String socialId) {
         return Member.builder()
                 .nickname(nickname)
+                .socialId(socialId)
                 .build();
     }
 

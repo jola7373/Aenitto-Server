@@ -1,5 +1,6 @@
 package com.firefighter.aenitto.members.repository;
 
+import com.firefighter.aenitto.auth.domain.RefreshToken;
 import com.firefighter.aenitto.members.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,7 +26,15 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public void saveMember(Member member) {
+    public Member saveMember(Member member) {
         em.persist(member);
+        return member;
+    }
+
+    @Override
+    public Member findBySocialId(String socialId) {
+        return em.createQuery("SELECT m FROM Member m WHERE m.socialId = :socialId", Member.class)
+                .setParameter("socialId" , socialId)
+                .getSingleResult();
     }
 }

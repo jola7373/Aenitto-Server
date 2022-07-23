@@ -27,13 +27,16 @@ public class Member extends CreationModificationLog {
 
     private String nickname;
 
+    private String socialId;
+
     @OneToMany(mappedBy = "member")
     private List<MemberRoom> memberRooms = new ArrayList<>();
 
     @Builder
-    public Member(UUID id, String nickname) {
+    public Member(UUID id, String nickname, String socialId) {
         this.id = id;
         this.nickname = nickname;
+        this.socialId = socialId;
     }
 
     public void changeNickname(String nickname) {
